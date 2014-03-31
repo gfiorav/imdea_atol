@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IMDEA A.T.O.L.</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="logging_notification_title_template">Logging: %1$s</string>
+    <string name="logging_notification_placeholder_text_template">You said %1$s and lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.</string>
+    <string name="action_share">Share</string>
+    <string name="action_reply">Reply</string>
+    
+    <!-- Help text -->
+    <string name="imdealogo">IMDEA NETWORKS</string>
+    <string name="imdeasublogo">Android Packet Traffic Logger</string>
+    <string name="help_text">Tap the button below to log bytes and packets sent and received through all interfaces to an xml file called \'imdea_atol.xml\' in the Download folder of the phone. Tap again to stop it. Works in the background. Granularity is 1s. Report a bug:</string>
+	<string name="bugs_email"><u>guido.fioravantti@imdea.org</u></string>
+    
+</resources>
