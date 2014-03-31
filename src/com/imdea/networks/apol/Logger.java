@@ -85,15 +85,18 @@ public class Logger extends Activity {
 				emailIntent.setType("text/plain");
 				
 				emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.bugs_email)});
-				emailIntent.putExtra(Intent.EXTRA_SUBJECT, "I found a BUG in the IMDEA ATOL app");
+				emailIntent.putExtra(Intent.EXTRA_SUBJECT, "BUG in the IMDEA ATOL App!");
+				emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello!\n\nI was using the IMDEA ATOL App on my " +android.os.Build.MODEL +" and discovered the following bug: \n\n");
 				
 				try {
 			         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-			         finish();
+
+			         
 			      } catch (android.content.ActivityNotFoundException ex) {
-			         Toast.makeText(Logger.this, 
+			         Toast.makeText(getApplicationContext(), 
 			         "There is no email client installed.", Toast.LENGTH_SHORT).show();
 			      }
+				
 				
 			}
 			
