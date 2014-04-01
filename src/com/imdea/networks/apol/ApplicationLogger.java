@@ -103,7 +103,7 @@ public class ApplicationLogger {
 				int millisecond 	= c.get(Calendar.MILLISECOND);
 				int second 			= c.get(Calendar.SECOND);
 				int minute 			= c.get(Calendar.MINUTE);
-				int hour			= c.get(Calendar.HOUR);
+				int hour			= c.get(Calendar.HOUR_OF_DAY);
 				int day				= c.get(Calendar.DAY_OF_MONTH);
 				int month 			= c.get(Calendar.MONTH);
 				int year 			= c.get(Calendar.YEAR);
