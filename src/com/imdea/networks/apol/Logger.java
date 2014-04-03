@@ -1,20 +1,13 @@
 package com.imdea.networks.apol;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
-import android.net.MailTo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Html;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -49,7 +42,18 @@ public class Logger extends Activity {
 		return true;
 	}
 
-
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case R.id.action_settings:
+			return true;
+		case R.id.active_measurements:
+			Intent active_measurements = new Intent(this, ActiveMeasurementsActivity.class);
+			startActivity(active_measurements);
+			return true;
+		}
+		
+		return false;
+	}
 
 	public void registerEventListeners() {
 		ImageButton loggingButton = (ImageButton) findViewById(R.id.logbutton);

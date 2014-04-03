@@ -1,0 +1,123 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#333333"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".ActiveMeasurementsActivity" >
+
+    <TextView
+        android:id="@+id/amtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="Helvetica Neue"
+        android:text="@string/amtitle"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amtitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" >
+
+        <RelativeLayout
+            android:id="@+id/firstwrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp" >
+
+            <ImageView
+                android:id="@+id/firstserver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/serveroffline" />
+
+            <TextView
+                android:id="@+id/firstservertext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/firstserver"
+                android:layout_marginTop="5dp"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="Helvetica Neue"
+                android:text="@string/default_server_text"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/secondwrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@id/firstwrapper"
+             >
+
+            <ImageView
+                android:id="@+id/secondserver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/serveroffline" />
+
+            <TextView
+                android:id="@+id/secondservertext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/secondserver"
+                android:layout_marginTop="5dp"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="Helvetica Neue"
+                android:text="@string/default_server_text"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/thirdwrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/secondwrapper"
+             >
+
+            <ImageView
+                android:id="@+id/thirdserver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/serveroffline" />
+
+            <TextView
+                android:id="@+id/thirdservertext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/thirdserver"
+                android:layout_marginTop="5dp"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="Helvetica Neue"
+                android:text="@string/default_server_text"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/startam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:src="@drawable/startam" />
+
+</RelativeLayout>
