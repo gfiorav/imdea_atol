@@ -12,7 +12,7 @@
     <!-- Help text -->
     <string name="imdealogo">IMDEA NETWORKS</string>
     <string name="imdeasublogo">Android Traffic Origin Logger</string>
-    <string name="help_text">Tap the button below to log bytes and packets sent and received through all interfaces to an xml file called \'imdea_atol.xml\' in the Download folder of the phone. Tap again to stop it. Works in the background. Granularity is 1s. Report a bug:</string>
+    <string name="help_text">Tap the button below to log bytes and packets sent and received through all interfaces. This App works in the background. Granularity is 1s. Report a bug:</string>
 	<string name="bugs_email"><u>guido.fioravantti@imdea.org</u></string>
     
 </resources>

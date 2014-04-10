@@ -1,5 +1,7 @@
 package com.imdea.networks.apol;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
@@ -14,11 +16,14 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.TrafficStats;
+import android.os.Environment;
 
 public class ApplicationLogger {
 
 	final ActivityManager activityManager = (ActivityManager) Logger.context.getSystemService(Context.ACTIVITY_SERVICE);
 	final List<RunningTaskInfo> recentTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+	
+	final String FOLDER_NAME = "IMDEA";
 
 	private List<ApplicationInfo> appsInfo = Logger.context.getPackageManager().getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
 
@@ -28,15 +33,43 @@ public class ApplicationLogger {
 	private long prevRxPackets [] = new long [this.appsInfo.size()];
 	private long prevTotalRxPackets;
 	private long prevTotalTxPackets;
+	
+	private int current_day;
 
 	private Timer timer;
-
-	private String path = "sdcard/Download/imdea_atol.xml";
-
+	
+	private String path;
 
 	// Constructor	
 	public ApplicationLogger() {
+		this.current_day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		initiateRxTxMatrices();
+		setUp();
+	}
+	
+	void setUp() {
+		// Check if directory exists
+		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME);
+		
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		
+		updateFilePath();
+		
+	}
+	
+	void updateFilePath() {
+		Calendar calendar = Calendar.getInstance();
+		
+		int day				= calendar.get(Calendar.DAY_OF_MONTH);
+		int month 			= calendar.get(Calendar.MONTH);
+		int year 			= calendar.get(Calendar.YEAR);
+		
+		String date = year + "-" + month + "-" +day;
+		this.path = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + date + ".xml";
+		
+		this.current_day = calendar.get(Calendar.DAY_OF_MONTH);
 	}
 
 	@SuppressLint("NewApi")
@@ -75,16 +108,24 @@ public class ApplicationLogger {
 
 	@SuppressLint("NewApi")
 	public void logActivity () {
+		
 		// Check if any new data was registered before logging
 		long currentTotalRxPackets = TrafficStats.getTotalRxPackets();
 		long currentTotalTxPackets = TrafficStats.getTotalTxPackets();
 
 		if((currentTotalRxPackets - this.prevTotalRxPackets) > 0 || (currentTotalTxPackets - this.prevTotalTxPackets) > 0) {
 			try {
+				// Check if day has changed and therefore need a new file
+				Calendar calendar = Calendar.getInstance();
+				
+				if(this.current_day != calendar.get(Calendar.DAY_OF_MONTH)){
+					updateFilePath();
+				}
+				
 				boolean appending = false;
 
 				// Signal if file exists, we don't declare xml header
-				RandomAccessFile rof = new RandomAccessFile(path, "rw");
+				RandomAccessFile rof = new RandomAccessFile(this.path, "rw");
 
 				if(rof.length() > 0)
 				{
@@ -99,14 +140,13 @@ public class ApplicationLogger {
 					rof.writeBytes("<events>\n");
 				}
 
-				Calendar c = Calendar.getInstance(); 
-				int millisecond 	= c.get(Calendar.MILLISECOND);
-				int second 			= c.get(Calendar.SECOND);
-				int minute 			= c.get(Calendar.MINUTE);
-				int hour			= c.get(Calendar.HOUR_OF_DAY);
-				int day				= c.get(Calendar.DAY_OF_MONTH);
-				int month 			= c.get(Calendar.MONTH);
-				int year 			= c.get(Calendar.YEAR);
+				int millisecond 	= calendar.get(Calendar.MILLISECOND);
+				int second 			= calendar.get(Calendar.SECOND);
+				int minute 			= calendar.get(Calendar.MINUTE);
+				int hour			= calendar.get(Calendar.HOUR_OF_DAY);
+				int day				= calendar.get(Calendar.DAY_OF_MONTH);
+				int month 			= calendar.get(Calendar.MONTH);
+				int year 			= calendar.get(Calendar.YEAR);
 
 				int a = 0;
 				for(ApplicationInfo ai : this.appsInfo)
