@@ -1,7 +1,6 @@
 package com.imdea.networks.apol;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
@@ -30,7 +29,7 @@ public class ApplicationLogger {
 
 	final ActivityManager activityManager = (ActivityManager) Logger.context.getSystemService(Context.ACTIVITY_SERVICE);
 	final List<RunningTaskInfo> recentTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
-	
+
 	final String FOLDER_NAME = "IMDEA";
 
 	private List<ApplicationInfo> appsInfo = Logger.context.getPackageManager().getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
@@ -41,17 +40,17 @@ public class ApplicationLogger {
 	private long prevRxPackets [] = new long [this.appsInfo.size()];
 	private long prevTotalRxPackets;
 	private long prevTotalTxPackets;
-	
+
 	public static LocationManager lm= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
 	public static Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-	
+
 	private final int LOCATION_REFRESH_TIME = 3000;
 	private final int LOCATION_REFRESH_DISTANCE = 1;
-	
+
 	private int current_day;
 
 	private Timer timer;
-	
+
 	private String path;
 
 	// Constructor	
@@ -60,31 +59,31 @@ public class ApplicationLogger {
 		initiateRxTxMatrices();
 		setUp();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-	            LOCATION_REFRESH_DISTANCE, LocationListener);
+				LOCATION_REFRESH_DISTANCE, LocationListener);
 	}
-	
+
 	void setUp() {
 		// Check if directory exists
 		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME);
-		
+
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
-		
+
 		updateFilePath();
-		
+
 	}
-	
+
 	void updateFilePath() {
 		Calendar calendar = Calendar.getInstance();
-		
+
 		int day				= calendar.get(Calendar.DAY_OF_MONTH);
 		int month 			= calendar.get(Calendar.MONTH);
 		int year 			= calendar.get(Calendar.YEAR);
-		
+
 		String date = year + "-" + month + "-" +day;
 		this.path = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + date + ".xml";
-		
+
 		this.current_day = calendar.get(Calendar.DAY_OF_MONTH);
 	}
 
@@ -121,35 +120,35 @@ public class ApplicationLogger {
 	public void stopLoggin() {
 		this.timer.cancel();
 	}
-	
+
 	private LocationListener LocationListener = new LocationListener() {
-	    @Override
-	    public void onLocationChanged(final Location location) {
-	        ApplicationLogger.location = location;
-	    }
+		@Override
+		public void onLocationChanged(final Location location) {
+			ApplicationLogger.location = location;
+		}
 
 		@Override
 		public void onProviderDisabled(String arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onProviderEnabled(String arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	};
 
 	@SuppressLint("NewApi")
 	public void logActivity () {
-		
+
 		// Check if any new data was registered before logging
 		long currentTotalRxPackets = TrafficStats.getTotalRxPackets();
 		long currentTotalTxPackets = TrafficStats.getTotalTxPackets();
@@ -158,11 +157,11 @@ public class ApplicationLogger {
 			try {
 				// Check if day has changed and therefore need a new file
 				Calendar calendar = Calendar.getInstance();
-				
+
 				if(this.current_day != calendar.get(Calendar.DAY_OF_MONTH)){
 					updateFilePath();
 				}
-				
+
 				boolean appending = false;
 
 				// Signal if file exists, we don't declare xml header
@@ -188,25 +187,20 @@ public class ApplicationLogger {
 				int day				= calendar.get(Calendar.DAY_OF_MONTH);
 				int month 			= calendar.get(Calendar.MONTH);
 				int year 			= calendar.get(Calendar.YEAR);
-				
+
 				TelephonyManager tm = (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 				GsmCellLocation cl = (GsmCellLocation) tm.getCellLocation();
 
 				int cellId = cl.getCid();
 				int cellLac = cl.getLac();
-				
+
 				ConnectivityManager cm = (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-				
+
 				int wifiState = 0;
 				if(wifi.isConnected()){
 					wifiState = 1;
 				}
-				
-				
-				
-				double latitude = location.getLatitude();
-				double longitude = location.getLongitude();
 
 				int a = 0;
 				for(ApplicationInfo ai : this.appsInfo)
@@ -238,8 +232,13 @@ public class ApplicationLogger {
 						rof.writeBytes("\t\t\t<millisecond>" + millisecond + "</millisecond>" +"\n");
 						rof.writeBytes("\t\t</time>\n");
 						rof.writeBytes("\t\t<location>\n");
-						rof.writeBytes("\t\t\t<latitude>" + latitude + "</latitude>\n");
-						rof.writeBytes("\t\t\t<longitude>" + longitude + "</longitude>\n");
+						if(location != null) {
+							rof.writeBytes("\t\t\t<latitude>" + location.getLatitude() + "</latitude>\n");
+							rof.writeBytes("\t\t\t<longitude>" + location.getLongitude() + "</longitude>\n");
+						}else {
+							rof.writeBytes("\t\t\t<latitude>unavailable</latitude>\n");
+							rof.writeBytes("\t\t\t<longitude>unavailable</longitude>\n");
+						}
 						rof.writeBytes("\t\t</location>\n");
 						rof.writeBytes("\t\t<cell>\n");
 						rof.writeBytes("\t\t\t<id>" + cellId + "</id>\n");
@@ -275,7 +274,7 @@ public class ApplicationLogger {
 				ioe.printStackTrace();
 			}
 		}
-		
+
 		this.prevTotalRxPackets = currentTotalRxPackets;
 		this.prevTotalTxPackets = currentTotalTxPackets;
 	}
