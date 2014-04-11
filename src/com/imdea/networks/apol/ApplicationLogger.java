@@ -15,8 +15,16 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.TrafficStats;
+import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 
 public class ApplicationLogger {
 
@@ -34,6 +42,12 @@ public class ApplicationLogger {
 	private long prevTotalRxPackets;
 	private long prevTotalTxPackets;
 	
+	public static LocationManager lm= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
+	public static Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	
+	private final int LOCATION_REFRESH_TIME = 3000;
+	private final int LOCATION_REFRESH_DISTANCE = 1;
+	
 	private int current_day;
 
 	private Timer timer;
@@ -45,6 +59,8 @@ public class ApplicationLogger {
 		this.current_day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		initiateRxTxMatrices();
 		setUp();
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+	            LOCATION_REFRESH_DISTANCE, LocationListener);
 	}
 	
 	void setUp() {
@@ -105,6 +121,31 @@ public class ApplicationLogger {
 	public void stopLoggin() {
 		this.timer.cancel();
 	}
+	
+	private LocationListener LocationListener = new LocationListener() {
+	    @Override
+	    public void onLocationChanged(final Location location) {
+	        ApplicationLogger.location = location;
+	    }
+
+		@Override
+		public void onProviderDisabled(String arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	@SuppressLint("NewApi")
 	public void logActivity () {
@@ -147,6 +188,25 @@ public class ApplicationLogger {
 				int day				= calendar.get(Calendar.DAY_OF_MONTH);
 				int month 			= calendar.get(Calendar.MONTH);
 				int year 			= calendar.get(Calendar.YEAR);
+				
+				TelephonyManager tm = (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
+				GsmCellLocation cl = (GsmCellLocation) tm.getCellLocation();
+
+				int cellId = cl.getCid();
+				int cellLac = cl.getLac();
+				
+				ConnectivityManager cm = (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+				
+				int wifiState = 0;
+				if(wifi.isConnected()){
+					wifiState = 1;
+				}
+				
+				
+				
+				double latitude = location.getLatitude();
+				double longitude = location.getLongitude();
 
 				int a = 0;
 				for(ApplicationInfo ai : this.appsInfo)
@@ -165,7 +225,7 @@ public class ApplicationLogger {
 					long tx_packets = raw_tx_packets -this.prevTxPackets[a];
 
 					if(rx_bytes != 0 || tx_bytes != 0) {
-						rof.write("\t<event>\n".getBytes());
+						rof.writeBytes("\t<event>\n");
 
 						String package_name = ai.packageName;
 						rof.writeBytes("\t\t<time>\n");
@@ -177,6 +237,15 @@ public class ApplicationLogger {
 						rof.writeBytes("\t\t\t<second>" + second + "</second>" +"\n");
 						rof.writeBytes("\t\t\t<millisecond>" + millisecond + "</millisecond>" +"\n");
 						rof.writeBytes("\t\t</time>\n");
+						rof.writeBytes("\t\t<location>\n");
+						rof.writeBytes("\t\t\t<latitude>" + latitude + "</latitude>\n");
+						rof.writeBytes("\t\t\t<longitude>" + longitude + "</longitude>\n");
+						rof.writeBytes("\t\t</location>\n");
+						rof.writeBytes("\t\t<cell>\n");
+						rof.writeBytes("\t\t\t<id>" + cellId + "</id>\n");
+						rof.writeBytes("\t\t\t<lac>" + cellLac + "</lac>\n");
+						rof.writeBytes("\t\t</cell>\n");
+						rof.writeBytes("\t\t<wifi>" + wifiState + "</wifi>\n");
 						rof.writeBytes("\t\t<app>" + package_name + "</app>" +"\n");
 						rof.writeBytes("\t\t<rx>"+"\n");
 						rof.writeBytes("\t\t\t<bytes>"+ rx_bytes +"</bytes>" +"\n");
