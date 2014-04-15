@@ -30,7 +30,7 @@ public class ApplicationLogger {
 	final ActivityManager activityManager = (ActivityManager) Logger.context.getSystemService(Context.ACTIVITY_SERVICE);
 	final List<RunningTaskInfo> recentTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-	final String FOLDER_NAME = "IMDEA";
+	public static final String FOLDER_NAME = "IMDEA";
 
 	private List<ApplicationInfo> appsInfo = Logger.context.getPackageManager().getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
 
@@ -44,8 +44,8 @@ public class ApplicationLogger {
 	public static LocationManager lm= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
 	public static Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-	private final int LOCATION_REFRESH_TIME = 3000;
-	private final int LOCATION_REFRESH_DISTANCE = 1;
+	private final int LOCATION_REFRESH_TIME = 60000;
+	private final int LOCATION_REFRESH_DISTANCE = 90;
 
 	private int current_day;
 

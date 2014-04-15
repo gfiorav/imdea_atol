@@ -6,7 +6,9 @@ import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -41,6 +43,20 @@ public class Logger extends Activity {
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch (item.getItemId()) {
+		case R.id.benchmark:
+			Intent benchmark = new Intent(getApplicationContext(), Benchmark.class);
+			startActivity(benchmark);
+			return true;
+		default:
+			return false;
+		}
+	}
+
+
+
 
 
 	public void registerEventListeners() {
@@ -65,33 +81,33 @@ public class Logger extends Activity {
 			}
 
 		});
-		
+
 		TextView developerLink = (TextView) findViewById(R.id.bugs_email);
 		developerLink.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
 				Intent emailIntent = new Intent(Intent.ACTION_SEND);
-				
+
 				emailIntent.setData(Uri.parse("mailto:"));
 				emailIntent.setType("text/plain");
-				
+
 				emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.bugs_email)});
 				emailIntent.putExtra(Intent.EXTRA_SUBJECT, "BUG in the IMDEA ATOL App!");
 				emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello!\n\nI was using the IMDEA ATOL App on my " +android.os.Build.MODEL +" and discovered the following bug: \n\n");
-				
-				try {
-			         startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 
-			         
-			      } catch (android.content.ActivityNotFoundException ex) {
-			         Toast.makeText(getApplicationContext(), 
-			         "There is no email client installed.", Toast.LENGTH_SHORT).show();
-			      }
-				
-				
+				try {
+					startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+
+
+				} catch (android.content.ActivityNotFoundException ex) {
+					Toast.makeText(getApplicationContext(), 
+							"There is no email client installed.", Toast.LENGTH_SHORT).show();
+				}
+
+
 			}
-			
+
 		});
 	}
 
