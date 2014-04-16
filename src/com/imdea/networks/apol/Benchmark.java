@@ -36,7 +36,7 @@ public class Benchmark extends Activity {
 
 	public static Handler UiUpdater;
 	public static Runnable UiUpdaterRunnable;
-	
+
 	private DecimalFormat df = new DecimalFormat("##.## MBps");
 
 	public void intialize() {
@@ -172,7 +172,7 @@ public class Benchmark extends Activity {
 
 	void updateResults(int id) {
 		long elapsed_time = (System.currentTimeMillis()) - benchmark_start[id];
-		
+
 		if(elapsed_time /1000 != 0) {
 			float rate = (float) ((totals[id] /1048576) / (elapsed_time /1000));
 			r[id].setText(this.df.format(rate));
@@ -181,29 +181,34 @@ public class Benchmark extends Activity {
 
 	private void updateUi() {
 		for(int i = 0; i < 3; i++) {
-			int progress = (int) (totals[i] * 100) / file_sizes[i];
+			if(benchmark_stop [i] == 0) {
+				int progress = (int) (totals[i] * 100) / file_sizes[i];
 
-			updateProgressBar(i, progress);
-			updatePercentages(i, progress);
-			updateResults(i);
+				updateProgressBar(i, progress);
+				updatePercentages(i, progress);
+				updateResults(i);
+			} else {
+				updateProgressBar(i, 100);
+				updatePercentages(i, 100);
+			}
 		}
-		
+
 		if(benchmark_stop [0] != 0 && benchmark_stop [1] != 0 && benchmark_stop [2] != 0) {
 			long t0, t1, t2;
 			float res0, res1, res2;
-			
+
 			t0 = (benchmark_stop[0] -benchmark_start[0]) /1000;
 			t1 = (benchmark_stop[1] -benchmark_start[1]) /1000;
 			t2 = (benchmark_stop[2] -benchmark_start[2]) /1000;
-			
+
 			res0 = (float) (totals[0] /1048576) /t0;
 			res1 = (float) (totals[1] /1048576) /t1;
 			res2 = (float) (totals[2] /1048576) /t2;
-			
+
 			float total = res0 + res1 + res2;
-			
+
 			TextView ft = (TextView) this.findViewById(R.id.final_result);
-			
+
 			ft.setText(df.format(total));
 		}
 	}
