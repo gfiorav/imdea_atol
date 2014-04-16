@@ -1,104 +1,82 @@
 package com.imdea.networks.apol;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.SocketAddress;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.UnknownHostException;
-import android.content.Context;
-import android.os.AsyncTask;
+import java.security.Timestamp;
+
 import android.os.Environment;
 import android.util.Log;
 
-public class DownloadTask extends AsyncTask<String, Integer, String> {
 
-	private Socket s;
-	private int server_port = 20;
-
-	private InputStream is;
-
+public class DownloadTask implements Runnable {	
+	private String link;
 	private int id;
-
-	private int chunk_size = 512;
-	private int timeout = 10000;
-
-	private Context context;
-
-	public DownloadTask(Context context) {
-		this.context = context;
+	
+	public DownloadTask (String link, int id) {
+		this.link = link;
+		this.id = id;
 	}
-
+	
 	@Override
-	protected String doInBackground(String... params) {
-		try {
-			SocketAddress sockaddr = new InetSocketAddress(
-                    params[0], this.server_port);
-			this.s = new Socket();
-			this.s.connect(sockaddr, this.timeout);
-			
-			this.is = this.s.getInputStream();
-		} catch (UnknownHostException e) {
-			Log.wtf("IP RESOLVE", "Unknown host: " + params[0]);
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			Log.wtf("IP RESOLVE", "Malformed address");
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.wtf("SOCKET RESOLVE", "IOException");
-			e.printStackTrace();
-		}
-		this.id = Integer.parseInt(params[1]);
+	public void run() {
+		InputStream input = null;
+        OutputStream output = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(this.link);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
 
-		byte bytes [] = new byte [chunk_size];
-		int bytes_read;
+            // expect HTTP 200 OK, so we don't mistakenly save error report
+            // instead of the file
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                Log.wtf("HTTP", "CODE: " + connection.getResponseCode());
+            }
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // this will be useful to display download percentage
+            // might be -1: server did not report the length
+            Benchmark.file_sizes[this.id] = connection.getContentLength();
 
-		if(is != null) {
-			FileOutputStream fos = null;
-			BufferedOutputStream bos = null;
+            // download the file
+            input = connection.getInputStream();
+            output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk" + File.separator + this.id + "-bnch.mrk");
 
-			try {
-				fos = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrks" + File.separator + this.id + ".adf");
-				bos = new BufferedOutputStream(fos);
+            byte data[] = new byte[4096];
+            
+            // Timestamp
+            Benchmark.benchmark_start[this.id] = System.currentTimeMillis();
+            
+            int count;
+            while ((count = input.read(data)) != -1) {
+                output.write(data, 0, count);
+                Benchmark.totals[this.id] += count;
+                
+                Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
+            }
+            
+            Benchmark.benchmark_stop[this.id] = System.currentTimeMillis();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (output != null)
+                    output.close();
+                if (input != null)
+                    input.close();
+            } catch (IOException ignored) {
+            }
 
-				bytes_read = is.read(bytes, 0, this.chunk_size);
-
-				do {
-					baos.write(bytes);
-					bytes_read = is.read(bytes);
-				} while (bytes_read != -1);
-
-				bos.write(baos.toByteArray());
-				bos.flush();
-				bos.close();
-				this.s.close();
-
-			} catch (IOException e) {
-				Log.wtf("WRITING DOWNLOAD", "IOException");
-			}
-		}
-		return null;
+            if (connection != null)
+                connection.disconnect();
+            
+        }
+        return;
+		
 	}
-
-	@Override
-	protected void onPostExecute(String result) {
-	}
-
-	@Override
-	protected void onPreExecute() {
-	}
-
-	@Override
-	protected void onProgressUpdate(Integer... values) {
-	}
-
+	
 }

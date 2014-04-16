@@ -23,7 +23,7 @@
             android:text="@string/default_benchmark"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="50sp" />
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/progress_text_2"
@@ -33,7 +33,7 @@
             android:text="@string/default_benchmark"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="50sp" />
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/progress_text_3"
@@ -44,7 +44,7 @@
             android:text="@string/default_benchmark"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="50sp" />
+            android:textSize="40sp" />
     </LinearLayout>
 
     <ProgressBar
@@ -109,6 +109,19 @@
             android:textColor="#FFFFFF"
             android:textSize="12sp" />
     </LinearLayout>
+    
+    <TextView
+            android:id="@+id/final_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="80dp"
+            android:fontFamily="Helvetica Neue"
+            android:text="@string/default_result"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="60sp" />
 
     <ImageButton
         android:layout_width="wrap_content"
