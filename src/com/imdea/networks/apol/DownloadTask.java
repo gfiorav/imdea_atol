@@ -60,6 +60,7 @@ public class DownloadTask implements Runnable {
             }
             
             Benchmark.benchmark_stop[this.id] = System.currentTimeMillis();
+            Benchmark.onGoing[this.id] = false;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

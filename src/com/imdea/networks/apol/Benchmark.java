@@ -39,7 +39,7 @@ public class Benchmark extends Activity {
 
 	private DecimalFormat df = new DecimalFormat("##.## MBps");
 
-	public void intialize() {
+	public void initialize() {
 		tv = new TextView[3];
 		tv[0] = (TextView) findViewById(R.id.progress_text_1);
 		tv[1] = (TextView) findViewById(R.id.progress_text_2);
@@ -97,7 +97,7 @@ public class Benchmark extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-		intialize();
+		initialize();
 
 	}
 
@@ -134,6 +134,10 @@ public class Benchmark extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void resetBenchmark() {
+		initialize();
+	}
 
 	public void startBenchmark(View view) {
 		bb = (ImageButton) view;
@@ -148,6 +152,8 @@ public class Benchmark extends Activity {
 			for(int i = 0; i < 3; i++) {
 				onGoing[i] = false;
 			}
+			
+			resetBenchmark();
 		} else {
 			bb.setImageResource(R.drawable.stopam);
 
@@ -210,6 +216,11 @@ public class Benchmark extends Activity {
 			TextView ft = (TextView) this.findViewById(R.id.final_result);
 
 			ft.setText(df.format(total));
+		}
+		
+		if(!onGoing[0] && !onGoing[1] && !onGoing[2]) {
+			ImageButton im = (ImageButton) findViewById(R.id.start_benchmark_button);
+			im.setImageResource(R.drawable.startam);
 		}
 	}
 
