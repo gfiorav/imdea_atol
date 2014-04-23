@@ -35,24 +35,22 @@ public final class R {
         public static final int stoplogging=0x7f02000b;
     }
     public static final class id {
-        public static final int action_settings=0x7f080010;
-        public static final int benchmark=0x7f080011;
-        public static final int benchmark_result_1=0x7f080002;
-        public static final int benchmark_result_2=0x7f080005;
-        public static final int benchmark_result_3=0x7f080008;
-        public static final int bugs_email=0x7f08000e;
-        public static final int final_result=0x7f080009;
-        public static final int help_text=0x7f08000d;
-        public static final int imdealogo=0x7f08000b;
-        public static final int imdeasublogo=0x7f08000c;
-        public static final int logbutton=0x7f08000f;
-        public static final int progress_text_1=0x7f080000;
-        public static final int progress_text_2=0x7f080003;
-        public static final int progress_text_3=0x7f080006;
-        public static final int server_img_1=0x7f080001;
-        public static final int server_img_2=0x7f080004;
-        public static final int server_img_3=0x7f080007;
-        public static final int start_benchmark_button=0x7f08000a;
+        public static final int action_settings=0x7f08000e;
+        public static final int benchmark=0x7f08000f;
+        public static final int benchmark_result_1=0x7f080001;
+        public static final int benchmark_result_2=0x7f080003;
+        public static final int benchmark_result_3=0x7f080005;
+        public static final int bugs_email=0x7f08000c;
+        public static final int final_result=0x7f080007;
+        public static final int help_text=0x7f08000b;
+        public static final int imdealogo=0x7f080009;
+        public static final int imdeasublogo=0x7f08000a;
+        public static final int logbutton=0x7f08000d;
+        public static final int remaining=0x7f080006;
+        public static final int server_img_1=0x7f080000;
+        public static final int server_img_2=0x7f080002;
+        public static final int server_img_3=0x7f080004;
+        public static final int start_benchmark_button=0x7f080008;
     }
     public static final class layout {
         public static final int activity_benchmark=0x7f030000;
@@ -63,25 +61,24 @@ public final class R {
         public static final int logger=0x7f070001;
     }
     public static final class string {
-        public static final int action_reply=0x7f050006;
+        public static final int action_reply=0x7f050004;
         public static final int action_settings=0x7f050001;
-        public static final int action_share=0x7f050005;
+        public static final int action_share=0x7f050003;
         public static final int app_name=0x7f050000;
-        public static final int benchmark=0x7f05000e;
-        public static final int bugs_email=0x7f05000a;
+        public static final int benchmark=0x7f05000c;
+        public static final int bugs_email=0x7f050008;
         /**  Benchmark Strings 
          */
-        public static final int default_benchmark=0x7f05000c;
-        public static final int default_result=0x7f05000d;
+        public static final int default_benchmark=0x7f05000a;
+        public static final int default_result=0x7f05000b;
         public static final int hello_world=0x7f050002;
-        public static final int help_text=0x7f050009;
+        public static final int help_text=0x7f050007;
         /**  Help text 
          */
-        public static final int imdealogo=0x7f050007;
-        public static final int imdeasublogo=0x7f050008;
-        public static final int logging_notification_placeholder_text_template=0x7f050004;
-        public static final int logging_notification_title_template=0x7f050003;
-        public static final int title_activity_benchmark=0x7f05000b;
+        public static final int imdealogo=0x7f050005;
+        public static final int imdeasublogo=0x7f050006;
+        public static final int title_activity_benchmark=0x7f050009;
+        public static final int waiting=0x7f05000d;
     }
     public static final class style {
         /** 

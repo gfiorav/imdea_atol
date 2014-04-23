@@ -63,24 +63,31 @@ public class DownloadTask implements Runnable {
 			while(!Benchmark.ready[0] || !Benchmark.ready[1] || !Benchmark.ready[2]);
 
 			// 0, for example, starts the timer
-//			if(this.id == 0) {
-//				Benchmark.startCumulativeBenchmark();
-//			}
+			if(this.id == 0) {
+				Benchmark.startCumulativeBenchmark();
+			}
 
 			while ((count = input.read(data)) != -1) {
+				if(Benchmark.benchmarkAchieved)
+					connection.disconnect();
+
 				output.write(data, 0, count);
-				total += count;
 				if(Benchmark.benchmark_start[this.id] == 0) {
 					Benchmark.benchmark_start[this.id] = System.currentTimeMillis();
 				}
-				Benchmark.totals[this.id] = total  * BITS_IN_BYTE;
+				
+				if(Benchmark.slow_start_ptr >= Benchmark.SLOW_START_DURATION) {
+					total += count;
+					Benchmark.totals[this.id] = total  * BITS_IN_BYTE;
+				}
+				
 				Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
 			}
 
 			Benchmark.benchmark_stop[this.id] = System.currentTimeMillis();
 			Benchmark.onGoing[this.id] = false;
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ignored) {
+			//e.printStackTrace();
 		} finally {
 			try {
 				if (output != null)

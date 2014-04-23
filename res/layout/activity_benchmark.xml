@@ -21,17 +21,6 @@
             android:gravity="center_vertical"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/progress_text_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="Helvetica Neue"
-                android:text="@string/default_benchmark"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
-
             <ImageView
                 android:id="@+id/server_img_1"
                 android:layout_width="wrap_content"
@@ -57,17 +46,6 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/progress_text_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="Helvetica Neue"
-                android:text="@string/default_benchmark"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/server_img_2"
@@ -96,17 +74,6 @@
             android:gravity="center_vertical"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/progress_text_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="Helvetica Neue"
-                android:text="@string/default_benchmark"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
-
             <ImageView
                 android:id="@+id/server_img_3"
                 android:layout_width="wrap_content"
@@ -127,6 +94,19 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/remaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="170dp"
+        android:fontFamily="Helvetica Neue"
+        android:text="@string/waiting"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp" />
 
     <TextView
         android:id="@+id/final_result"

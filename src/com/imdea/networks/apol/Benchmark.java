@@ -2,6 +2,7 @@ package com.imdea.networks.apol;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,10 +24,14 @@ import android.os.Build;
 
 public class Benchmark extends Activity {
 
-	private static double cumulative [];
-	private static double previous_cumulative [];
-	private static int cumulative_ptr;
-	private static int slow_start_ptr;
+	public static int BENCHMARK_DURATION = 20;
+	public static int SLOW_START_DURATION = 5;
+	public static int STEADY_STATE_TIME = BENCHMARK_DURATION - SLOW_START_DURATION;
+	
+	public static double cumulative [];
+	public static double average[];
+	public static int cumulative_ptr;
+	public static int slow_start_ptr;
 
 	static Timer cumulativeTimer;
 
@@ -35,11 +40,13 @@ public class Benchmark extends Activity {
 	static TextView r [];
 	static ImageView si [];
 	static int sc[];
+	static double fr;
 
 	private float sr[];
 
 	static boolean onGoing[];
 	static boolean ready[];
+	static boolean benchmarkAchieved;
 
 	static long benchmark_start [];
 	static long benchmark_stop [];
@@ -52,20 +59,17 @@ public class Benchmark extends Activity {
 	public static Handler UiUpdater;
 	public static Runnable UiUpdaterRunnable;
 
-	private DecimalFormat df = new DecimalFormat("##.## Mbps");
+	private static DecimalFormat df = new DecimalFormat("##.## Mbps");
 
 	public static int MAX_SPEED = 2;
 
 	public void initialize() {
-		this.cumulative = new double [15];
-		this.previous_cumulative = new double [15];
-		this.cumulative_ptr = 0;
-		this.slow_start_ptr = 0;
+		cumulative = new double [STEADY_STATE_TIME];
+		average = new double [STEADY_STATE_TIME];
+		cumulative_ptr = 0;
+		slow_start_ptr = 0;
 
-		tv = new TextView[3];
-		tv[0] = (TextView) findViewById(R.id.progress_text_1);
-		tv[1] = (TextView) findViewById(R.id.progress_text_2);
-		tv[2] = (TextView) findViewById(R.id.progress_text_3);
+		fr = 0;
 
 		si = new ImageView[3];
 		si[0] = (ImageView) findViewById(R.id.server_img_1);
@@ -94,6 +98,7 @@ public class Benchmark extends Activity {
 		benchmark_stop = new long [3];
 		onGoing = new boolean [3];
 		ready = new boolean[3];
+		benchmarkAchieved = false;
 
 		for(int i = 0; i < 3; i++) {
 			file_sizes[i] = 1;
@@ -174,7 +179,7 @@ public class Benchmark extends Activity {
 		initialize();
 	}
 
-	public void startBenchmark(View view) {
+	public void startBenchmark(View view) {		
 		bb = (ImageButton) view;
 
 		if(!onGoing[0] && !onGoing[1] && !onGoing[2]) {
@@ -191,16 +196,12 @@ public class Benchmark extends Activity {
 
 	}
 
-	void updatePercentages(int id, int percentage) {
-		tv[id].setText(percentage + "%");
-	}
-
 	void updateResults(int id) {
 		long elapsed_time = (System.currentTimeMillis()) - benchmark_start[id];
 
 		if(elapsed_time /1000 != 0) {
 			float rate = (float) ((totals[id] /1048576) / (elapsed_time /1000));
-			r[id].setText(this.df.format(rate));
+			r[id].setText(df.format(rate));
 			sr[id] = rate;
 		}
 	}
@@ -209,7 +210,7 @@ public class Benchmark extends Activity {
 		TextView r = (TextView) findViewById(R.id.final_result);
 		float result = sr[0] + sr[1] +sr[2];
 
-		r.setText(this.df.format(result));
+		r.setText(df.format(result));
 	}
 
 	void updateServerImages(int id) {
@@ -224,51 +225,67 @@ public class Benchmark extends Activity {
 		for(int i = 0; i < 3; i++) {
 			if(onGoing[i])
 			{
-				int progress = (int) ((totals[i] * 100) / file_sizes[i]);
-
-				updatePercentages(i, progress);
 				updateResults(i);
 				updateServerImages(i);
-			} else {
-				updatePercentages(i, 100);
 			}
 		}
 
-		if(!onGoing[0] && !onGoing[1] && !onGoing[2]) {
-			updateTotal();
-			bb.setImageResource(R.drawable.startam);
-			resetBenchmark();
+		if(benchmarkAchieved) {
+			TextView frt = (TextView) findViewById(R.id.final_result);
+			frt.setText(df.format(fr));
+
+			TextView sl = (TextView) findViewById(R.id.remaining);
+			sl.setText("Benchmark completed");
+
+			//resetBenchmark();
+		} else {
+			TextView sl = (TextView) findViewById(R.id.remaining);
+			int slow_start_rem = SLOW_START_DURATION - slow_start_ptr;
+			int seconds_remaining = (STEADY_STATE_TIME - cumulative_ptr) + slow_start_rem;
+			if(slow_start_rem != 0) {
+				sl.setText("Slow start ends in ... " + slow_start_rem +"s");
+			} else {
+				sl.setText(seconds_remaining +" seconds remaining");
+			}
 		}
 
 	}
 
 	public static void startCumulativeBenchmark() {
+
 		cumulativeTimer = new Timer();
 		cumulativeTimer.scheduleAtFixedRate(new TimerTask(){
 
 			@Override
 			public void run() {
-				if(slow_start_ptr != 3) {
+				Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
+				if(slow_start_ptr < SLOW_START_DURATION) {
 					slow_start_ptr++;
-				} else if(slow_start_ptr == 4) {
-					double total_prev = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
-					previous_cumulative [cumulative_ptr] = total_prev;
-					cumulative_ptr++;
 				} else {
-					if(cumulative_ptr < 14) {
-						double total_cumulative = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
-						previous_cumulative[cumulative_ptr] = total_cumulative;
-						double total_instant = total_cumulative - previous_cumulative[cumulative_ptr -1];
-						cumulative[cumulative_ptr] = total_instant;
-						
+					if(cumulative_ptr < STEADY_STATE_TIME) {
+						if(cumulative_ptr == 0) {
+							double total_cumulative = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
+							cumulative[cumulative_ptr] = total_cumulative;
+							average[cumulative_ptr] = total_cumulative / 3;
+						} else {
+							double total_cumulative = (Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2]) - cumulative[cumulative_ptr - 1];
+							cumulative[cumulative_ptr] = total_cumulative;
+							average[cumulative_ptr] = total_cumulative / 3;
+						}
 						cumulative_ptr++;
 					} else {
-						double total = 0;
-						for(int i = 0; i < 15; i++) {
-							total += cumulative[i];
-						}
-						double average = total / 15;
-						Log.wtf("TOTAL", ""+ average);
+						benchmarkAchieved = true;
+
+						Arrays.sort(average);
+						
+//						for(int i = 0; i < 15; i++) {
+//							Log.wtf("MEDIAN", i + " " + average[i] / 1048576);
+//						}
+						
+						float median = (float) average[(STEADY_STATE_TIME) / 2] / 1048576;
+						
+						fr = median;
+						
 						this.cancel();
 					}
 				}
