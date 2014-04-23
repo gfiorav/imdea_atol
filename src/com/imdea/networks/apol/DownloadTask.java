@@ -16,68 +16,86 @@ import android.util.Log;
 public class DownloadTask implements Runnable {	
 	private String link;
 	private int id;
-	
+
+	private final int BITS_IN_BYTE = 8;
+
 	public DownloadTask (String link, int id) {
 		this.link = link;
 		this.id = id;
 	}
-	
+
 	@Override
 	public void run() {
 		InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL(this.link);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
+		OutputStream output = null;
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(this.link);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.connect();
 
-            // expect HTTP 200 OK, so we don't mistakenly save error report
-            // instead of the file
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.wtf("HTTP", "CODE: " + connection.getResponseCode());
-            }
+			// expect HTTP 200 OK, so we don't mistakenly save error report
+			// instead of the file
+			int code = connection.getResponseCode();
+			if (code != HttpURLConnection.HTTP_OK) {
+				Log.wtf("HTTP", "CODE: " + connection.getResponseCode());
+			}
 
-            // this will be useful to display download percentage
-            // might be -1: server did not report the length
-            Benchmark.file_sizes[this.id] = connection.getContentLength();
+			Benchmark.sc[this.id] = code;
 
-            // download the file
-            input = connection.getInputStream();
-            output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk" + File.separator + this.id + "-bnch.mrk");
+			// this will be useful to display download percentage
+			// might be -1: server did not report the length
+			Benchmark.file_sizes[this.id] = connection.getContentLength() * BITS_IN_BYTE;
 
-            byte data[] = new byte[4096];
-            
-            // Timestamp
-            Benchmark.benchmark_start[this.id] = System.currentTimeMillis();
-            
-            int count;
-            while ((count = input.read(data)) != -1) {
-                output.write(data, 0, count);
-                Benchmark.totals[this.id] += count;
-                
-                Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
-            }
-            
-            Benchmark.benchmark_stop[this.id] = System.currentTimeMillis();
-            Benchmark.onGoing[this.id] = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (output != null)
-                    output.close();
-                if (input != null)
-                    input.close();
-            } catch (IOException ignored) {
-            }
+			// download the file
+			input = connection.getInputStream();
+			output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk" + File.separator + this.id + "-bnch.mrk");
 
-            if (connection != null)
-                connection.disconnect();
-            
-        }
-        return;
-		
+			byte data[] = new byte[4096];
+
+			int count;
+			int total = 0;
+
+			Benchmark.ready[this.id] = true;
+			Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
+
+			// We wait for the other downloads to be ready before we start 
+			while(!Benchmark.ready[0] || !Benchmark.ready[1] || !Benchmark.ready[2]);
+
+			// 0, for example, starts the timer
+//			if(this.id == 0) {
+//				Benchmark.startCumulativeBenchmark();
+//			}
+
+			while ((count = input.read(data)) != -1) {
+				output.write(data, 0, count);
+				total += count;
+				if(Benchmark.benchmark_start[this.id] == 0) {
+					Benchmark.benchmark_start[this.id] = System.currentTimeMillis();
+				}
+				Benchmark.totals[this.id] = total  * BITS_IN_BYTE;
+				Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
+			}
+
+			Benchmark.benchmark_stop[this.id] = System.currentTimeMillis();
+			Benchmark.onGoing[this.id] = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (output != null)
+					output.close();
+				if (input != null)
+					input.close();
+			} catch (IOException ignored) {
+			}
+
+			if (connection != null)
+				connection.disconnect();
+
+		}
+		return;
+
 	}
-	
+
 }

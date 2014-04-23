@@ -17,8 +17,8 @@
     <string name="title_activity_benchmark">Benchmark</string>
     
     <!-- Benchmark Strings -->
-    <string name="default_benchmark">--%</string>
-    <string name="default_result">--.- MBps</string>
+    <string name="default_benchmark">OFF.</string>
+    <string name="default_result">--.- Mbps</string>
     <string name="benchmark">Benchmark</string>
 
 </resources>

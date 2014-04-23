@@ -2,15 +2,19 @@ package com.imdea.networks.apol;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
@@ -19,12 +23,23 @@ import android.os.Build;
 
 public class Benchmark extends Activity {
 
+	private static double cumulative [];
+	private static double previous_cumulative [];
+	private static int cumulative_ptr;
+	private static int slow_start_ptr;
+
+	static Timer cumulativeTimer;
+
 	static TextView tv [];
-	static ProgressBar pb [];
 	static ImageButton bb;
 	static TextView r [];
+	static ImageView si [];
+	static int sc[];
+
+	private float sr[];
 
 	static boolean onGoing[];
+	static boolean ready[];
 
 	static long benchmark_start [];
 	static long benchmark_stop [];
@@ -37,29 +52,48 @@ public class Benchmark extends Activity {
 	public static Handler UiUpdater;
 	public static Runnable UiUpdaterRunnable;
 
-	private DecimalFormat df = new DecimalFormat("##.## MBps");
+	private DecimalFormat df = new DecimalFormat("##.## Mbps");
+
+	public static int MAX_SPEED = 2;
 
 	public void initialize() {
+		this.cumulative = new double [15];
+		this.previous_cumulative = new double [15];
+		this.cumulative_ptr = 0;
+		this.slow_start_ptr = 0;
+
 		tv = new TextView[3];
 		tv[0] = (TextView) findViewById(R.id.progress_text_1);
 		tv[1] = (TextView) findViewById(R.id.progress_text_2);
 		tv[2] = (TextView) findViewById(R.id.progress_text_3);
 
-		pb = new ProgressBar[3];
-		pb[0] = (ProgressBar) findViewById(R.id.progress_bar_1);
-		pb[1] = (ProgressBar) findViewById(R.id.progress_bar_2);
-		pb[2] = (ProgressBar) findViewById(R.id.progress_bar_3);
+		si = new ImageView[3];
+		si[0] = (ImageView) findViewById(R.id.server_img_1);
+		si[1] = (ImageView) findViewById(R.id.server_img_2);
+		si[2] = (ImageView) findViewById(R.id.server_img_3);
+
+		sc = new int[3];
+		sc[0] = -1;
+		sc[1] = -1;
+		sc[2] = -1;
 
 		r = new TextView[3];
 		r[0] = (TextView) findViewById(R.id.benchmark_result_1);
 		r[1] = (TextView) findViewById(R.id.benchmark_result_2);
 		r[2] = (TextView) findViewById(R.id.benchmark_result_3);
 
+		sr = new float[3];
+		sr[0] = 0;
+		sr[1] = 0;
+		sr[2] = 0;
+
+
 		file_sizes = new int [3];
 		totals = new double [3];
 		benchmark_start = new long [3]; 
 		benchmark_stop = new long [3];
 		onGoing = new boolean [3];
+		ready = new boolean[3];
 
 		for(int i = 0; i < 3; i++) {
 			file_sizes[i] = 1;
@@ -67,12 +101,13 @@ public class Benchmark extends Activity {
 			benchmark_start[i] = 0;
 			benchmark_stop[i] = 0;
 			onGoing[i] = false;
+			ready[i] = false;
 		}
 
 		this.dts = new DownloadTask [3];
-		this.dts[0] = new DownloadTask("http://www.tassar.es/IMDEA/10MB.zip", 0);
-		this.dts[1] = new DownloadTask("http://who.guido.is/IMDEA/10MB.zip", 1);
-		this.dts[2] = new DownloadTask("http://people.networks.imdea.org/~foivos_michelinakis/staticfiles/10MB.zip", 2);
+		this.dts[0] = new DownloadTask("http://www.tassar.es/IMDEA/20MB.imdeab", 0);
+		this.dts[1] = new DownloadTask("http://who.guido.is/IMDEA/20MB.imdeab", 1);
+		this.dts[2] = new DownloadTask("http://people.networks.imdea.org/~foivos_michelinakis/staticfiles/50MB.zip", 2);
 
 		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk");
 
@@ -134,7 +169,7 @@ public class Benchmark extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void resetBenchmark() {
 		initialize();
 	}
@@ -142,19 +177,7 @@ public class Benchmark extends Activity {
 	public void startBenchmark(View view) {
 		bb = (ImageButton) view;
 
-		if(onGoing[0] || onGoing[1] || onGoing[2]) {
-			bb.setImageResource(R.drawable.startam);
-
-			for(TextView t : tv){
-				t.setText(R.string.default_benchmark);
-			}
-
-			for(int i = 0; i < 3; i++) {
-				onGoing[i] = false;
-			}
-			
-			resetBenchmark();
-		} else {
+		if(!onGoing[0] && !onGoing[1] && !onGoing[2]) {
 			bb.setImageResource(R.drawable.stopam);
 
 			new Thread(this.dts[0]).start();
@@ -168,10 +191,6 @@ public class Benchmark extends Activity {
 
 	}
 
-	void updateProgressBar(int id, int progress) {
-		pb[id].setProgress(progress);
-	}
-
 	void updatePercentages(int id, int percentage) {
 		tv[id].setText(percentage + "%");
 	}
@@ -182,46 +201,80 @@ public class Benchmark extends Activity {
 		if(elapsed_time /1000 != 0) {
 			float rate = (float) ((totals[id] /1048576) / (elapsed_time /1000));
 			r[id].setText(this.df.format(rate));
+			sr[id] = rate;
 		}
 	}
 
-	private void updateUi() {
-		for(int i = 0; i < 3; i++) {
-			if(benchmark_stop [i] == 0) {
-				int progress = (int) (totals[i] * 100) / file_sizes[i];
+	void updateTotal() {
+		TextView r = (TextView) findViewById(R.id.final_result);
+		float result = sr[0] + sr[1] +sr[2];
 
-				updateProgressBar(i, progress);
+		r.setText(this.df.format(result));
+	}
+
+	void updateServerImages(int id) {
+		if(sc[id] == 200)
+			si[id].setImageResource(R.drawable.serveronline);
+		else
+			si[id].setImageResource(R.drawable.serveroffline);
+	}
+
+	private void updateUi() {
+
+		for(int i = 0; i < 3; i++) {
+			if(onGoing[i])
+			{
+				int progress = (int) ((totals[i] * 100) / file_sizes[i]);
+
 				updatePercentages(i, progress);
 				updateResults(i);
+				updateServerImages(i);
 			} else {
-				updateProgressBar(i, 100);
 				updatePercentages(i, 100);
 			}
 		}
 
-		if(benchmark_stop [0] != 0 && benchmark_stop [1] != 0 && benchmark_stop [2] != 0) {
-			long t0, t1, t2;
-			float res0, res1, res2;
-
-			t0 = (benchmark_stop[0] -benchmark_start[0]) /1000;
-			t1 = (benchmark_stop[1] -benchmark_start[1]) /1000;
-			t2 = (benchmark_stop[2] -benchmark_start[2]) /1000;
-
-			res0 = (float) (totals[0] /1048576) /t0;
-			res1 = (float) (totals[1] /1048576) /t1;
-			res2 = (float) (totals[2] /1048576) /t2;
-
-			float total = res0 + res1 + res2;
-
-			TextView ft = (TextView) this.findViewById(R.id.final_result);
-
-			ft.setText(df.format(total));
-		}
-		
 		if(!onGoing[0] && !onGoing[1] && !onGoing[2]) {
-			ImageButton im = (ImageButton) findViewById(R.id.start_benchmark_button);
-			im.setImageResource(R.drawable.startam);
+			updateTotal();
+			bb.setImageResource(R.drawable.startam);
+			resetBenchmark();
 		}
+
+	}
+
+	public static void startCumulativeBenchmark() {
+		cumulativeTimer = new Timer();
+		cumulativeTimer.scheduleAtFixedRate(new TimerTask(){
+
+			@Override
+			public void run() {
+				if(slow_start_ptr != 3) {
+					slow_start_ptr++;
+				} else if(slow_start_ptr == 4) {
+					double total_prev = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
+					previous_cumulative [cumulative_ptr] = total_prev;
+					cumulative_ptr++;
+				} else {
+					if(cumulative_ptr < 14) {
+						double total_cumulative = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
+						previous_cumulative[cumulative_ptr] = total_cumulative;
+						double total_instant = total_cumulative - previous_cumulative[cumulative_ptr -1];
+						cumulative[cumulative_ptr] = total_instant;
+						
+						cumulative_ptr++;
+					} else {
+						double total = 0;
+						for(int i = 0; i < 15; i++) {
+							total += cumulative[i];
+						}
+						double average = total / 15;
+						Log.wtf("TOTAL", ""+ average);
+						this.cancel();
+					}
+				}
+			}
+
+		},0, 1000);
 	}
 
 
