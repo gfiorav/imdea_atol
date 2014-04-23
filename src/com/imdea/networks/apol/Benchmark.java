@@ -24,8 +24,8 @@ import android.os.Build;
 
 public class Benchmark extends Activity {
 
+	public static int SLOW_START_DURATION = 8;
 	public static int BENCHMARK_DURATION = 20;
-	public static int SLOW_START_DURATION = 5;
 	public static int STEADY_STATE_TIME = BENCHMARK_DURATION - SLOW_START_DURATION;
 	
 	public static double cumulative [];
@@ -278,13 +278,15 @@ public class Benchmark extends Activity {
 
 						Arrays.sort(average);
 						
-//						for(int i = 0; i < 15; i++) {
-//							Log.wtf("MEDIAN", i + " " + average[i] / 1048576);
-//						}
-						
 						float median = (float) average[(STEADY_STATE_TIME) / 2] / 1048576;
 						
-						fr = median;
+						double count = 0;
+						for(int i = 0; i < STEADY_STATE_TIME; i++) {
+							count += average[i];
+						}
+						float avg = (float) (count / STEADY_STATE_TIME / 1048576);
+								
+						fr = avg;
 						
 						this.cancel();
 					}
