@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 public class Logger extends Activity {
 
-	private ApplicationLogger al;
-
+	Intent app_log;
+	
 	public static Context context;
 
 	public static Vibrator vib;
@@ -31,7 +31,7 @@ public class Logger extends Activity {
 		setContentView(R.layout.activity_logger);
 
 		Logger.context = getApplicationContext();
-		this.al = new ApplicationLogger();
+		this.app_log = new Intent(Logger.context, ApplicationLogger.class);
 
 		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 		registerEventListeners();
@@ -82,10 +82,10 @@ public class Logger extends Activity {
 				ImageButton loggingButton = (ImageButton) arg0.findViewById(R.id.logbutton);
 				if(!isLogging) {
 					loggingButton.setImageResource(R.drawable.stoplogging);
-					al.startLogging();
+					Logger.context.startService(app_log);
 				} else {
 					loggingButton.setImageResource(R.drawable.startlogging);
-					al.stopLoggin();
+					Logger.context.stopService(app_log);
 				}
 
 				isLogging = !isLogging;

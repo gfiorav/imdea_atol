@@ -42,6 +42,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="Logger" />
         </activity>
+
+        <service android:name="com.imdea.networks.apol.ApplicationLogger" >
+        </service>
     </application>
 
 </manifest>

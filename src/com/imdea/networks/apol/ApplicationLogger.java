@@ -11,7 +11,9 @@ import java.util.TimerTask;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,10 +24,12 @@ import android.net.NetworkInfo;
 import android.net.TrafficStats;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
-public class ApplicationLogger {
+public class ApplicationLogger extends Service {
 
 	final ActivityManager activityManager = (ActivityManager) Logger.context.getSystemService(Context.ACTIVITY_SERVICE);
 	final List<RunningTaskInfo> recentTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
@@ -54,9 +58,8 @@ public class ApplicationLogger {
 	private String path;
 	
 	public boolean isLogging = false;
-
-	// Constructor	
-	public ApplicationLogger() {
+	
+	public void initiate() {
 		this.current_day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		initiateRxTxMatrices();
 		setUp();
@@ -149,7 +152,6 @@ public class ApplicationLogger {
 
 	@SuppressLint("NewApi")
 	public void logActivity () {
-
 		// Check if any new data was registered before logging
 		long currentTotalRxPackets = TrafficStats.getTotalRxPackets();
 		long currentTotalTxPackets = TrafficStats.getTotalTxPackets();
@@ -278,6 +280,18 @@ public class ApplicationLogger {
 
 		this.prevTotalRxPackets = currentTotalRxPackets;
 		this.prevTotalTxPackets = currentTotalTxPackets;
+	}
+
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		initiate();
+		startLogging();
+		return Service.START_NOT_STICKY;
+	}
+	
+	@Override
+	public IBinder onBind(Intent arg0) {
+		
+		return null;
 	}
 
 }
