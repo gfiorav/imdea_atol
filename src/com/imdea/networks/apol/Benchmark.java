@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -24,10 +25,10 @@ import android.os.Build;
 
 public class Benchmark extends Activity {
 
-	public static int SLOW_START_DURATION = 8;
-	public static int BENCHMARK_DURATION = 20;
+	public static int SLOW_START_DURATION = 5;
+	public static int BENCHMARK_DURATION = 10;
 	public static int STEADY_STATE_TIME = BENCHMARK_DURATION - SLOW_START_DURATION;
-	
+
 	public static double cumulative [];
 	public static double average[];
 	public static int cumulative_ptr;
@@ -41,6 +42,9 @@ public class Benchmark extends Activity {
 	static ImageView si [];
 	static int sc[];
 	static double fr;
+	static double tm;
+
+	TextView sl;
 
 	private float sr[];
 
@@ -59,22 +63,34 @@ public class Benchmark extends Activity {
 	public static Handler UiUpdater;
 	public static Runnable UiUpdaterRunnable;
 
-	private static DecimalFormat df = new DecimalFormat("##.## Mbps");
+	private static DecimalFormat rf = new DecimalFormat("##.## Mbps");
+	private static DecimalFormat sf = new DecimalFormat("##.#MB");
 
 	public static int MAX_SPEED = 2;
 
 	public void initialize() {
+		ImageButton start = (ImageButton) findViewById(R.id.start_benchmark_button);
+		start.setImageResource(R.drawable.startam);
+
+		sl = (TextView) findViewById(R.id.remaining);
+		sl.setText("Ready when you are");
+
 		cumulative = new double [STEADY_STATE_TIME];
 		average = new double [STEADY_STATE_TIME];
 		cumulative_ptr = 0;
 		slow_start_ptr = 0;
 
 		fr = 0;
+		tm = 0;
 
 		si = new ImageView[3];
 		si[0] = (ImageView) findViewById(R.id.server_img_1);
 		si[1] = (ImageView) findViewById(R.id.server_img_2);
 		si[2] = (ImageView) findViewById(R.id.server_img_3);
+		
+		for(ImageView i : si) {
+			i.setImageResource(R.drawable.serveroffline);
+		}
 
 		sc = new int[3];
 		sc[0] = -1;
@@ -110,9 +126,16 @@ public class Benchmark extends Activity {
 		}
 
 		this.dts = new DownloadTask [3];
-		this.dts[0] = new DownloadTask("http://www.tassar.es/IMDEA/20MB.imdeab", 0);
-		this.dts[1] = new DownloadTask("http://who.guido.is/IMDEA/20MB.imdeab", 1);
-		this.dts[2] = new DownloadTask("http://people.networks.imdea.org/~foivos_michelinakis/staticfiles/50MB.zip", 2);
+		//		this.dts[0] = new DownloadTask("http://www.tassar.es/IMDEA/20MB.imdeab", 0);
+		//		this.dts[1] = new DownloadTask("http://who.guido.is/IMDEA/20MB.imdeab", 1);
+		//		this.dts[2] = new DownloadTask("http://people.networks.imdea.org/~foivos_michelinakis/staticfiles/50MB.zip", 2);
+
+		// /speedtest/random4000x4000.jpg
+		
+		this.dts[0] = new DownloadTask("http://testvelocidad1.orange.es/speedtest/random4000x4000.jpg", 0);
+		this.dts[1] = new DownloadTask("http://speedtest.mad.adamo.es/speedtest/random4000x4000.jpg", 1);
+		this.dts[2] = new DownloadTask("http://testmadmovistar.telefonica.com/speedtest/random4000x4000.jpg", 2);
+
 
 		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk");
 
@@ -136,6 +159,8 @@ public class Benchmark extends Activity {
 		setContentView(R.layout.activity_benchmark);
 		// Show the Up button in the action bar.
 		setupActionBar();
+
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		initialize();
 
@@ -192,25 +217,23 @@ public class Benchmark extends Activity {
 			for(int i = 0; i < 3; i++) {
 				onGoing[i] = true;
 			}
+		} else {
+			benchmarkAchieved = true;
+			cumulativeTimer.cancel();
+			resetBenchmark();
 		}
 
 	}
 
 	void updateResults(int id) {
-		long elapsed_time = (System.currentTimeMillis()) - benchmark_start[id];
-
-		if(elapsed_time /1000 != 0) {
-			float rate = (float) ((totals[id] /1048576) / (elapsed_time /1000));
-			r[id].setText(df.format(rate));
-			sr[id] = rate;
-		}
+		r[id].setText(sf.format(Benchmark.totals[id] / 1048576 / 8));
 	}
 
 	void updateTotal() {
 		TextView r = (TextView) findViewById(R.id.final_result);
 		float result = sr[0] + sr[1] +sr[2];
 
-		r.setText(df.format(result));
+		r.setText(rf.format(result));
 	}
 
 	void updateServerImages(int id) {
@@ -232,21 +255,23 @@ public class Benchmark extends Activity {
 
 		if(benchmarkAchieved) {
 			TextView frt = (TextView) findViewById(R.id.final_result);
-			frt.setText(df.format(fr));
+			frt.setText(rf.format(fr) + " (" + sf.format(tm) + ")");
 
-			TextView sl = (TextView) findViewById(R.id.remaining);
-			sl.setText("Benchmark completed");
-
-			//resetBenchmark();
+			resetBenchmark();
 		} else {
-			TextView sl = (TextView) findViewById(R.id.remaining);
 			int slow_start_rem = SLOW_START_DURATION - slow_start_ptr;
 			int seconds_remaining = (STEADY_STATE_TIME - cumulative_ptr) + slow_start_rem;
-			if(slow_start_rem != 0) {
-				sl.setText("Slow start ends in ... " + slow_start_rem +"s");
-			} else {
-				sl.setText(seconds_remaining +" seconds remaining");
+
+			if(ready[0] && ready[1] && ready[2]) {
+				if(slow_start_rem != 0) {
+					sl.setText("Slow start ends in ... " + slow_start_rem +"s");
+				} else {
+					sl.setText(seconds_remaining +" seconds remaining");
+				}
+			} else if(onGoing[0] && onGoing[1] && onGoing[2]){
+				sl.setText("Waiting for Servers...");
 			}
+
 		}
 
 	}
@@ -259,40 +284,44 @@ public class Benchmark extends Activity {
 			@Override
 			public void run() {
 				Benchmark.UiUpdater.post(Benchmark.UiUpdaterRunnable);
-				if(slow_start_ptr < SLOW_START_DURATION) {
-					slow_start_ptr++;
-				} else {
-					if(cumulative_ptr < STEADY_STATE_TIME) {
-						if(cumulative_ptr == 0) {
-							double total_cumulative = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
-							cumulative[cumulative_ptr] = total_cumulative;
-							average[cumulative_ptr] = total_cumulative / 3;
-						} else {
-							double total_cumulative = (Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2]) - cumulative[cumulative_ptr - 1];
-							cumulative[cumulative_ptr] = total_cumulative;
-							average[cumulative_ptr] = total_cumulative / 3;
-						}
-						cumulative_ptr++;
+				if(!benchmarkAchieved) {
+					if(slow_start_ptr < SLOW_START_DURATION) {
+						slow_start_ptr++;
 					} else {
-						benchmarkAchieved = true;
+						if(cumulative_ptr < STEADY_STATE_TIME) {
+							if(cumulative_ptr == 0) {
+								double total_cumulative = Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2];
+								cumulative[cumulative_ptr] = total_cumulative;
+								average[cumulative_ptr] = total_cumulative / 3;
+							} else {
+								double total_cumulative = (Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2]) - cumulative[cumulative_ptr - 1];
+								cumulative[cumulative_ptr] = total_cumulative;
+								average[cumulative_ptr] = total_cumulative / 3;
+							}
+							cumulative_ptr++;
+						} else {
+							benchmarkAchieved = true;
 
-						Arrays.sort(average);
-						
-						float median = (float) average[(STEADY_STATE_TIME) / 2] / 1048576;
-						
-						double count = 0;
-						for(int i = 0; i < STEADY_STATE_TIME; i++) {
-							count += average[i];
+							Arrays.sort(average);
+
+							float median = (float) average[(STEADY_STATE_TIME) / 2] / 1048576;
+
+							double count = 0;
+							for(int i = 0; i < STEADY_STATE_TIME; i++) {
+								count += average[i];
+							}
+							float avg = (float) (count / STEADY_STATE_TIME / 1048576);
+							fr = avg;
+							
+							double tot_mb = (Benchmark.totals[0] + Benchmark.totals[1] + Benchmark.totals[2]);
+							tot_mb = tot_mb / 1048576 / 8;
+							tm = tot_mb;
+
+							this.cancel();
 						}
-						float avg = (float) (count / STEADY_STATE_TIME / 1048576);
-								
-						fr = avg;
-						
-						this.cancel();
 					}
-				}
+				} 
 			}
-
 		},0, 1000);
 	}
 

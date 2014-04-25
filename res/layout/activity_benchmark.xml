@@ -10,6 +10,7 @@
     tools:context=".Benchmark" >
 
     <LinearLayout
+        android:id="@+id/server_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" >
@@ -100,26 +101,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_below="@id/server_layout"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="170dp"
         android:fontFamily="Helvetica Neue"
         android:text="@string/waiting"
         android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="25sp" />
+        android:textColor="#B8B8B8"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/final_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp"
+		android:layout_above="@+id/start_benchmark_button"
+		android:layout_marginBottom="15dp"
         android:fontFamily="Helvetica Neue"
         android:text="@string/default_result"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="60sp" />
+        android:textSize="30sp" />
 
     <ImageButton
         android:id="@+id/start_benchmark_button"

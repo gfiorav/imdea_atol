@@ -19,23 +19,35 @@ public class Logger extends Activity {
 
 	private ApplicationLogger al;
 
-	public boolean isLogging = false;
 	public static Context context;
 
 	public static Vibrator vib;
 
+	public static boolean isLogging = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_logger);
 
-		this.context = getApplicationContext();
+		Logger.context = getApplicationContext();
 		this.al = new ApplicationLogger();
 
-		this.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
+		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 		registerEventListeners();
+		
+		setUp();
 	}
 
+	public void setUp() {
+		ImageButton sb = (ImageButton) findViewById(R.id.logbutton);
+		if(isLogging) {
+			sb.setImageResource(R.drawable.stoplogging);
+		} else {
+			sb.setImageResource(R.drawable.startlogging);
+		}
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

@@ -52,6 +52,8 @@ public class ApplicationLogger {
 	private Timer timer;
 
 	private String path;
+	
+	public boolean isLogging = false;
 
 	// Constructor	
 	public ApplicationLogger() {
@@ -104,9 +106,7 @@ public class ApplicationLogger {
 	}
 
 	public void startLogging() {
-
 		this.timer = new Timer();
-
 
 		this.timer.schedule(new TimerTask() {			
 			public void run() {
@@ -114,11 +114,12 @@ public class ApplicationLogger {
 			}
 
 		}, 0, 1000);
-
+		Logger.isLogging = true;
 	}
 
 	public void stopLoggin() {
 		this.timer.cancel();
+		Logger.isLogging = false;
 	}
 
 	private LocationListener LocationListener = new LocationListener() {
