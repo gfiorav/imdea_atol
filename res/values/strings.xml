@@ -18,6 +18,8 @@
     <string name="default_benchmark">OFF.</string>
     <string name="default_result">--.- Mbps</string>
     <string name="benchmark">Benchmark</string>
+    <string name="systematic_downloads">Systematic Downloads</string>
     <string name="waiting">Waiting to start ...</string>
+    <string name="title_activity_systematic_downloads">SystematicDownloads</string>
 
 </resources>

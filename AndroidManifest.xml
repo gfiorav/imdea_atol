@@ -45,6 +45,18 @@
 
         <service android:name="com.imdea.networks.apol.ApplicationLogger" >
         </service>
+        
+        <service android:name="com.imdea.networks.apol.SystematicDownloadService" >
+        </service>
+
+        <activity
+            android:name="com.imdea.networks.apol.SystematicDownloads"
+            android:label="@string/title_activity_systematic_downloads"
+            android:parentActivityName="com.imdea.networks.apol.Logger" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imdea.networks.apol.Logger" />
+        </activity>
     </application>
 
 </manifest>
