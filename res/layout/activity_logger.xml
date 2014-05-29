@@ -11,7 +11,7 @@
     
     <RelativeLayout 
         android:layout_width="fill_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         
         >
         <TextView 
@@ -68,8 +68,37 @@
 		android:layout_centerHorizontal="true"
 		android:layout_alignParentBottom="true"
 		android:scrollbars="vertical"
-		android:layout_marginBottom="15dp"
+		android:layout_marginBottom="20dp"
 		android:background="@null"
         />
+    
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        >
+
+        <TextView
+            android:id="@+id/di_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="Helvetica Neue"
+            android:gravity="center"
+            android:text="@string/download_indicator"
+            android:textColor="#8E8E8E"
+            android:textSize="12sp"
+            android:layout_marginBottom="0dp"
+             />
+        
+        <ImageView 
+            android:id="@+id/download_indicator"
+            android:src="@drawable/lighton"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignRight="@id/di_text"
+            />
+        
+    </RelativeLayout>
 
 </RelativeLayout>

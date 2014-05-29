@@ -62,11 +62,7 @@ public class Logger extends Activity {
 			Intent benchmark = new Intent(getApplicationContext(), Benchmark.class);
 			startActivity(benchmark);
 			return true;
-			
-		case R.id.systematic_downloads:
-			Intent systematic = new Intent(getApplicationContext(), SystematicDownloads.class);
-			startActivity(systematic);
-			return true;
+
 		default:
 			return false;
 		}

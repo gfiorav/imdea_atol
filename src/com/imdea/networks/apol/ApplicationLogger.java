@@ -2,7 +2,10 @@ package com.imdea.networks.apol;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
@@ -51,14 +54,25 @@ public class ApplicationLogger extends Service {
 	private final int LOCATION_REFRESH_TIME = 60000;
 	private final int LOCATION_REFRESH_DISTANCE = 90;
 
+	private final int LOG_TIMER = 1000;
+	private final int DOWLOAD_TIMER = 5*60*1000;
+	
+	private final int MTU = 1500;
+	private int MAX_RETRIES = 5;
+	
+	/****************** SERVER FILE ADDRESS ******************/
+	private final String URL = "http://www.mona.ps.e-technik.tu-darmstadt.de/staticfiles/file5mb.data";
+	/****************** SERVER FILE ADDRESS ******************/
+
 	private int current_day;
 
-	private Timer timer;
+	private Timer loggerTimer;
+	private Timer downloadTimer;
 
 	private String path;
-	
+
 	public boolean isLogging = false;
-	
+
 	public void initiate() {
 		this.current_day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		initiateRxTxMatrices();
@@ -109,19 +123,28 @@ public class ApplicationLogger extends Service {
 	}
 
 	public void startLogging() {
-		this.timer = new Timer();
+		this.loggerTimer 	= new Timer();
+		this.downloadTimer 	= new Timer();
 
-		this.timer.schedule(new TimerTask() {			
+		this.loggerTimer.schedule(new TimerTask() {			
 			public void run() {
 				logActivity();
 			}
 
-		}, 0, 1000);
+		}, 0, LOG_TIMER);
+
+		this.downloadTimer.schedule(new TimerTask() {
+			public void run() {
+				downloadFiles();
+			}
+		}, 0, DOWLOAD_TIMER);
+
 		Logger.isLogging = true;
 	}
 
 	public void stopLoggin() {
-		this.timer.cancel();
+		this.loggerTimer.cancel();
+		this.downloadTimer.cancel();
 		Logger.isLogging = false;
 	}
 
@@ -282,15 +305,71 @@ public class ApplicationLogger extends Service {
 		this.prevTotalTxPackets = currentTotalTxPackets;
 	}
 
+	public void downloadFiles() {
+		int tries = 0;
+		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		tries = 0;
+		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		tries = 0;
+		while(!downloadFile(this.URL, 2*1024*1024) && (tries++) <= this.MAX_RETRIES);
+		
+		tries = 0;
+		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		tries = 0;
+		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		Log.wtf("DOWNLOAD", "SERIES COMPLETED");
+	}
+
+	private boolean downloadFile(String url, int bytes) {
+		int bytes_read = 0;
+
+		InputStream input = null;
+		HttpURLConnection connection = null;
+		try {
+			URL u = new URL(url);
+			connection = (HttpURLConnection) u.openConnection();
+			connection.connect();
+
+			if(connection.getResponseCode() == 200) {
+				Log.wtf("CONN ERROR", "FILE NOT FOUND");
+				connection.disconnect();
+				return false;
+			}
+
+			input = connection.getInputStream();
+
+			while(input.read() != -1)
+			{
+				if(bytes_read < bytes) {
+					bytes_read++;
+				}
+				else {
+					input.close();
+				}
+			}
+
+		} catch(Exception e) {
+			connection.disconnect();
+			return false;
+		}
+		
+		connection.disconnect();
+		return true;
+	}
+
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		initiate();
 		startLogging();
 		return Service.START_NOT_STICKY;
 	}
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
-		
+
 		return null;
 	}
 

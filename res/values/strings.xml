@@ -13,6 +13,7 @@
     <string name="help_text">Tap the button below to log bytes and packets sent and received through all interfaces. This App works in the background. Granularity is 1s. Report a bug:</string>
     <string name="bugs_email"><u>guido.fioravantti@imdea.org</u></string>
     <string name="title_activity_benchmark">Benchmark</string>
+    <string name="download_indicator">Download Activity</string>
 
     <!-- Benchmark Strings -->
     <string name="default_benchmark">OFF.</string>
