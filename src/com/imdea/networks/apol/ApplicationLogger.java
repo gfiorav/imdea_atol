@@ -61,7 +61,7 @@ public class ApplicationLogger extends Service {
 	private int MAX_RETRIES = 5;
 	
 	/****************** SERVER FILE ADDRESS ******************/
-	private final String URL = "http://www.mona.ps.e-technik.tu-darmstadt.de/staticfiles/file5mb.data";
+	private final String URL = "http://testvelocidad1.orange.es/speedtest/random4000x4000.jpg";
 	/****************** SERVER FILE ADDRESS ******************/
 
 	private int current_day;
@@ -338,25 +338,30 @@ public class ApplicationLogger extends Service {
 			connection = (HttpURLConnection) u.openConnection();
 			connection.connect();
 
-			if(connection.getResponseCode() == 200) {
+			if(connection.getResponseCode() != 200) {
 				Log.wtf("CONN ERROR", "FILE NOT FOUND");
 				connection.disconnect();
 				return false;
 			}
 
 			input = connection.getInputStream();
-
-			while(input.read() != -1)
+			
+			boolean run = true;
+			while(input.read() != -1 && run)
 			{
 				if(bytes_read < bytes) {
 					bytes_read++;
 				}
 				else {
-					input.close();
+					run = false;
 				}
 			}
+			
+			input.close();
 
 		} catch(Exception e) {
+			e.printStackTrace();
+			Log.wtf("CONN ERROR", "EXCEPTION RAISED");
 			connection.disconnect();
 			return false;
 		}
