@@ -64,6 +64,8 @@ public class ApplicationLogger extends Service {
 	private final String URL = "http://mona.ps.e-technik.tu-darmstadt.de/staticfiles/file5mb.data";
 	/****************** SERVER FILE ADDRESS ******************/
 
+	private final String forofor = "http://www.google.com/i/love/pretzels";
+	
 	private int current_day;
 
 	private Timer loggerTimer;
@@ -313,17 +315,32 @@ public class ApplicationLogger extends Service {
 		int tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
 		
+		/* Marker download */
+		downloadFile(this.forofor, 50*this.MTU);
+		
 		tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		/* Marker download */
+		downloadFile(this.forofor, 50*this.MTU);
 		
 		tries = 0;
 		while(!downloadFile(this.URL, 2*1024*1024) && (tries++) <= this.MAX_RETRIES);
 		
-		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		/* Marker download */
+		downloadFile(this.forofor, 50*this.MTU);
 		
 		tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		/* Marker download */
+		downloadFile(this.forofor, 50*this.MTU);
+		
+		tries = 0;
+		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		
+		/* Marker download */
+		downloadFile(this.forofor, 50*this.MTU);
 		
 		Log.wtf("DOWNLOAD", "SERIES COMPLETED");
 	}
