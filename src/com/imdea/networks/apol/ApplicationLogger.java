@@ -61,7 +61,7 @@ public class ApplicationLogger extends Service {
 	private int MAX_RETRIES = 5;
 	
 	/****************** SERVER FILE ADDRESS ******************/
-	private final String URL = "http://testvelocidad1.orange.es/speedtest/random4000x4000.jpg";
+	private final String URL = "http://mona.ps.e-technik.tu-darmstadt.de/staticfiles/file5mb.data";
 	/****************** SERVER FILE ADDRESS ******************/
 
 	private int current_day;
