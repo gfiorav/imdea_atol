@@ -216,10 +216,14 @@ public class ApplicationLogger extends Service {
 
 				TelephonyManager tm = (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 				GsmCellLocation cl = (GsmCellLocation) tm.getCellLocation();
-
-				int cellId = cl.getCid();
-				int cellLac = cl.getLac();
-
+				
+				int cellId = -1;
+				int cellLac = -1;
+				if(cl != null) {
+					cellId = cl.getCid();
+					cellLac = cl.getLac();
+				}
+				
 				ConnectivityManager cm = (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
