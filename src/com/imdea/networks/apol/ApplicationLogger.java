@@ -56,16 +56,16 @@ public class ApplicationLogger extends Service {
 
 	private final int LOG_TIMER = 1000;
 	private final int DOWLOAD_TIMER = 5*60*1000;
-	
+
 	private final int MTU = 1500;
 	private int MAX_RETRIES = 5;
-	
+
 	/****************** SERVER FILE ADDRESS ******************/
-	private final String URL = "http://testvelocidad1.orange.es/speedtest/random4000x4000.jpg";
+	private final String URL = "http://testvelocidad1.orange.es/speedtest/random1000x1000.jpg";
 	/****************** SERVER FILE ADDRESS ******************/
 
 	private final String forofor = "http://www.google.com/i/love/pretzels";
-	
+
 	private int current_day;
 
 	private Timer loggerTimer;
@@ -218,14 +218,14 @@ public class ApplicationLogger extends Service {
 
 				TelephonyManager tm = (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 				GsmCellLocation cl = (GsmCellLocation) tm.getCellLocation();
-				
+
 				int cellId = -1;
 				int cellLac = -1;
 				if(cl != null) {
 					cellId = cl.getCid();
 					cellLac = cl.getLac();
 				}
-				
+
 				ConnectivityManager cm = (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
@@ -314,34 +314,34 @@ public class ApplicationLogger extends Service {
 	public void downloadFiles() {
 		int tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
 		while(!downloadFile(this.URL, 2*1024*1024) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
 		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		Log.wtf("DOWNLOAD", "SERIES COMPLETED");
 	}
 
@@ -362,19 +362,22 @@ public class ApplicationLogger extends Service {
 			}
 
 			input = connection.getInputStream();
-			
-			boolean run = true;
-			while(input.read() != -1 && run)
+
+			while(input.read() != -1)
 			{
 				if(bytes_read < bytes) {
 					bytes_read++;
 				}
 				else {
-					run = false;
+					input.close();
+					connection.disconnect();
+					return true;
 				}
 			}
-			
+
 			input.close();
+			connection.disconnect();
+			return true;
 
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -382,9 +385,7 @@ public class ApplicationLogger extends Service {
 			connection.disconnect();
 			return false;
 		}
-		
-		connection.disconnect();
-		return true;
+
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
