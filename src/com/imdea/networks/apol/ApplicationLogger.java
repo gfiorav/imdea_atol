@@ -55,17 +55,18 @@ public class ApplicationLogger extends Service {
 	private final int LOCATION_REFRESH_DISTANCE = 90;
 
 	private final int LOG_TIMER = 1000;
-	private final int DOWLOAD_TIMER = 5*60*1000;
-	
+	private final int DOWLOAD_TIMER = 50*60*1000;
+
 	private final int MTU = 1500;
 	private int MAX_RETRIES = 5;
-	
+
 	/****************** SERVER FILE ADDRESS ******************/
-	private final String URL = "http://mona.ps.e-technik.tu-darmstadt.de/staticfiles/file5mb.data";
+	private final String URL 		= "http://mona.ps.e-technik.tu-darmstadt.de/staticfiles/file1mb.data";
+	private final String tiny_URL 	= "http://mona.ps.e-technik.tu-darmstadt.de/staticfiles/file2mb.data";
 	/****************** SERVER FILE ADDRESS ******************/
 
 	private final String forofor = "http://www.google.com/i/love/pretzels";
-	
+
 	private int current_day;
 
 	private Timer loggerTimer;
@@ -218,14 +219,14 @@ public class ApplicationLogger extends Service {
 
 				TelephonyManager tm = (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 				GsmCellLocation cl = (GsmCellLocation) tm.getCellLocation();
-				
+
 				int cellId = -1;
 				int cellLac = -1;
 				if(cl != null) {
 					cellId = cl.getCid();
 					cellLac = cl.getLac();
 				}
-				
+
 				ConnectivityManager cm = (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
@@ -313,35 +314,35 @@ public class ApplicationLogger extends Service {
 
 	public void downloadFiles() {
 		int tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
 		while(!downloadFile(this.URL, 2*1024*1024) && (tries++) <= this.MAX_RETRIES);
-		
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
-		
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
-		
+
 		Log.wtf("DOWNLOAD", "SERIES COMPLETED");
 	}
 
@@ -362,19 +363,22 @@ public class ApplicationLogger extends Service {
 			}
 
 			input = connection.getInputStream();
-			
-			boolean run = true;
-			while(input.read() != -1 && run)
+
+			while(input.read() != -1)
 			{
 				if(bytes_read < bytes) {
 					bytes_read++;
 				}
 				else {
-					run = false;
+					input.close();
+					connection.disconnect();
+					return true;
 				}
 			}
-			
+
 			input.close();
+			connection.disconnect();
+			return true;
 
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -382,9 +386,7 @@ public class ApplicationLogger extends Service {
 			connection.disconnect();
 			return false;
 		}
-		
-		connection.disconnect();
-		return true;
+
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
