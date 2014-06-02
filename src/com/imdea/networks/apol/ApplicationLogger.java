@@ -55,13 +55,14 @@ public class ApplicationLogger extends Service {
 	private final int LOCATION_REFRESH_DISTANCE = 90;
 
 	private final int LOG_TIMER = 1000;
-	private final int DOWLOAD_TIMER = 5*60*1000;
+	private final int DOWLOAD_TIMER = 50*60*1000;
 
 	private final int MTU = 1500;
 	private int MAX_RETRIES = 5;
 
 	/****************** SERVER FILE ADDRESS ******************/
-	private final String URL = "http://testvelocidad1.orange.es/speedtest/random1000x1000.jpg";
+	private final String URL 		= "http://testvelocidad1.orange.es/speedtest/random1000x1000.jpg";
+	private final String tiny_URL 	= "http://testvelocidad1.orange.es/speedtest/random500x500.jpg";
 	/****************** SERVER FILE ADDRESS ******************/
 
 	private final String forofor = "http://www.google.com/i/love/pretzels";
@@ -313,13 +314,13 @@ public class ApplicationLogger extends Service {
 
 	public void downloadFiles() {
 		int tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
 
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
 
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
 
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
@@ -331,13 +332,13 @@ public class ApplicationLogger extends Service {
 		downloadFile(this.forofor, 50*this.MTU);
 
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
 
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
 
 		tries = 0;
-		while(!downloadFile(this.URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
+		while(!downloadFile(this.tiny_URL, 50 * this.MTU) && (tries++) <= this.MAX_RETRIES);
 
 		/* Marker download */
 		downloadFile(this.forofor, 50*this.MTU);
