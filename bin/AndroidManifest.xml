@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.imdea.networks.apol"
-    android:versionCode="12"
+    android:versionCode="13"
     android:versionName="1.2.3" >
 
     <!-- Permissions -->
@@ -44,6 +44,9 @@
         </activity>
 
         <service android:name="com.imdea.networks.apol.ApplicationLogger" >
+        </service>
+        
+        <service android:name="com.imdea.networks.apol.MobilityLogger" >
         </service>
         
         <service android:name="com.imdea.networks.apol.SystematicDownloadService" >

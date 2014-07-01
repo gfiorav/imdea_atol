@@ -46,6 +46,9 @@
         <service android:name="com.imdea.networks.apol.ApplicationLogger" >
         </service>
         
+        <service android:name="com.imdea.networks.apol.MobilityLogger" >
+        </service>
+        
         <service android:name="com.imdea.networks.apol.SystematicDownloadService" >
         </service>
 
