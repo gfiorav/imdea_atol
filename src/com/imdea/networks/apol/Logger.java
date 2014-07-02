@@ -113,8 +113,12 @@ public class Logger extends Activity {
 			float accuracy 	= location.getAccuracy();
 			float bearing 	= location.getBearing();
 			int satellites 	= location.getExtras().getInt("satellites");
-			int cell_id 	= cl.getCid();
-			int cell_lac 	= cl.getLac();
+			int cell_id = -1;
+			int cell_lac = -1;
+			if(cl != null) {
+				cell_id 	= cl.getCid();
+				cell_lac 	= cl.getLac();
+			}
 			int wifi 		= 0;
 			if(WiFi.isConnected()) {
 				wifi = 1;
