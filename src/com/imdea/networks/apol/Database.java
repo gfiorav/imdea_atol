@@ -20,6 +20,9 @@ public class Database extends SQLiteOpenHelper {
 	private final static String KEY_TIMESTAMP 	= "timestamp";
 	private final static String KEY_LATITUDE 	= "latitude";
 	private final static String KEY_LONGITUDE 	= "longitude";
+	private final static String KEY_ACCURACY 	= "accuracy";
+	private final static String KEY_BEARING 	= "bearing";
+	private final static String KEY_SATELLITES 	= "satellites";
 	private final static String KEY_CELL_ID 	= "cell_id";
 	private final static String KEY_CELL_LAC 	= "cell_lac";
 	private final static String KEY_WIFI 		= "wifi";
@@ -35,6 +38,9 @@ public class Database extends SQLiteOpenHelper {
 					"timestamp INTEGER, " +
 					"latitude REAL," +
 					"longitude REAL," +
+					"accuracy REAL," +
+					"bearing REAL," +
+					"satellites INTEGER," +
 					"cell_id INTEGER," +
 					"cell_lac INTEGER, " +
 					"wifi INTEGER" +
@@ -50,6 +56,9 @@ public class Database extends SQLiteOpenHelper {
 		values.put(KEY_TIMESTAMP, m.timestamp);
 		values.put(KEY_LATITUDE, m.latitude);
 		values.put(KEY_LONGITUDE, m.longitude);
+		values.put(KEY_ACCURACY, m.accuracy);
+		values.put(KEY_BEARING, m.bearing);
+		values.put(KEY_SATELLITES, m.satellites);
 		values.put(KEY_CELL_ID, m.cell_id);
 		values.put(KEY_CELL_LAC, m.cell_lac);
 		values.put(KEY_WIFI, m.wifi);

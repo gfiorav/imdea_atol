@@ -110,6 +110,9 @@ public class Logger extends Activity {
 				latitude 	= location.getLatitude();
 				longitude 	= location.getLongitude();
 			}
+			float accuracy 	= location.getAccuracy();
+			float bearing 	= location.getBearing();
+			int satellites 	= location.getExtras().getInt("satellites");
 			int cell_id 	= cl.getCid();
 			int cell_lac 	= cl.getLac();
 			int wifi 		= 0;
@@ -117,7 +120,7 @@ public class Logger extends Activity {
 				wifi = 1;
 			}
 
-			Measurement m = new Measurement(latitude, longitude, cell_id, cell_lac, wifi);
+			Measurement m = new Measurement(latitude, longitude, accuracy, bearing, satellites, cell_id, cell_lac, wifi);
 
 			db.add(m);
 		}
