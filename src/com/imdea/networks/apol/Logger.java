@@ -13,11 +13,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,8 +44,10 @@ public class Logger extends Activity {
 	TelephonyManager tm;
 	ConnectivityManager cm;
 
-	private final int LOCATION_REFRESH_TIME = 15000;
-	private final int LOCATION_REFRESH_DISTANCE = 30;
+	private final int LOCATION_REFRESH_DISTANCE 		= 30;
+	private final int LOCATION_REFRESH_TIME 			= 15000;
+	
+	private final int SYSTEMATIC_DOWNLOAD_PERIOD_MIN 	= 50; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +70,14 @@ public class Logger extends Activity {
 	}
 
 	public void setUp() {
-		ImageButton sb = (ImageButton) findViewById(R.id.logbutton);
-		if(isLogging) {
-			sb.setImageResource(R.drawable.stoplogging);
-		} else {
-			sb.setImageResource(R.drawable.startlogging);
-		}
+		EditText sd_period = (EditText) findViewById(R.id.sd_period);
+		sd_period.setText("" + SYSTEMATIC_DOWNLOAD_PERIOD_MIN);
+		
+		EditText min_distance = (EditText) findViewById(R.id.min_distance);
+		min_distance.setText("" + LOCATION_REFRESH_DISTANCE);
+		
+		EditText min_time = (EditText) findViewById(R.id.min_time);
+		min_time.setText("" + LOCATION_REFRESH_TIME);
 	}
 
 	@Override
@@ -91,11 +100,11 @@ public class Logger extends Activity {
 		}
 	}
 
-	public void startLogging () {
+	public void startGPS () {
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, LocationListener);
 	}
 
-	public void stopLogging () {
+	public void stopGPS () {
 		lm.removeUpdates(LocationListener);
 	}
 
@@ -152,26 +161,19 @@ public class Logger extends Activity {
 	};
 
 	public void registerEventListeners() {
-		ImageButton loggingButton = (ImageButton) findViewById(R.id.logbutton);
-		loggingButton.setOnClickListener(new OnClickListener(){
+		
+		Switch GPSSwitch = (Switch) findViewById(R.id.GPS_switch);
+		GPSSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 			@Override
-			public void onClick(View arg0) {
+			public void onCheckedChanged(CompoundButton Switch, boolean checked) {
 				Logger.vib.vibrate((long) 150);
-
-				ImageButton loggingButton = (ImageButton) arg0.findViewById(R.id.logbutton);
-				if(!isLogging) {
-					loggingButton.setImageResource(R.drawable.stoplogging);
-					startLogging();
-				} else {
-					loggingButton.setImageResource(R.drawable.startlogging);
-					stopLogging();
-				}
-
+				
+				if(checked) startGPS(); else stopGPS();
+				
 				isLogging = !isLogging;
-
 			}
-
+			
 		});
 
 		TextView developerLink = (TextView) findViewById(R.id.bugs_email);
