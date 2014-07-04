@@ -21,7 +21,7 @@ public class Measurement {
 		this.latitude 	= latitude;
 		this.accuracy 	= accuracy;
 		this.bearing 	= bearing;
-		this.satellites 	= satelites;
+		this.satellites = satelites;
 		this.cell_id 	= cell_id;
 		this.cell_lac 	= cell_lac;
 		this.wifi 		= wifi;

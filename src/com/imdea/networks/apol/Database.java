@@ -47,6 +47,7 @@ public class Database extends SQLiteOpenHelper {
 					" )";
 		
 		db.execSQL(CREATE_TABLE);
+		
 	}
 
 	public void add(Measurement m) {

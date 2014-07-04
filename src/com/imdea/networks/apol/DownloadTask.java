@@ -49,7 +49,7 @@ public class DownloadTask implements Runnable {
 
 			// download the file
 			input = connection.getInputStream();
-			output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk" + File.separator + this.id + "-bnch.mrk");
+			output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + Logger.FOLDER_NAME + File.separator + ".bnchmrk" + File.separator + this.id + "-bnch.mrk");
 
 			byte data[] = new byte[4096];
 

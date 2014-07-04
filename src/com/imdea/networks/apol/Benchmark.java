@@ -137,7 +137,7 @@ public class Benchmark extends Activity {
 		this.dts[2] = new DownloadTask("http://testmadmovistar.telefonica.com/speedtest/random4000x4000.jpg", 2);
 
 
-		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + ApplicationLogger.FOLDER_NAME + File.separator + ".bnchmrk");
+		File directory = new File(Environment.getExternalStorageDirectory() + File.separator + Logger.FOLDER_NAME + File.separator + ".bnchmrk");
 
 		if (!directory.exists()) {
 			directory.mkdir();

@@ -29,6 +29,8 @@ public class Logger extends Activity {
 
 	public static boolean isLogging = false;
 	
+	public static final String FOLDER_NAME = "IMDEA";
+	
 	Database db;
 
 	LocationManager lm;
@@ -112,7 +114,8 @@ public class Logger extends Activity {
 			}
 			float accuracy 	= location.getAccuracy();
 			float bearing 	= location.getBearing();
-			int satellites 	= location.getExtras().getInt("satellites");
+			int satellites 	= -1;
+			try { satellites 	= Integer.parseInt(location.getExtras().getString("satellites")); } catch (Exception e) {}
 			int cell_id = -1;
 			int cell_lac = -1;
 			if(cl != null) {
