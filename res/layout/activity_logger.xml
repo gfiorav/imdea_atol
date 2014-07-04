@@ -92,8 +92,8 @@
                 android:id="@+id/sd_period"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" 
-                android:inputType="number"/>
+                android:layout_alignParentRight="true"
+                android:inputType="number" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -126,16 +126,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="Min Time (ms)"
+                android:text="Min Distance (m)"
                 android:textSize="20sp" >
             </TextView>
 
             <EditText
-                android:id="@+id/min_time"
+                android:id="@+id/min_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" 
-                android:inputType="number"/>
+                android:layout_alignParentRight="true"
+                android:inputType="number" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -147,17 +147,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="Min Distance (m)"
+                android:text="Min Time (s)"
                 android:textSize="20sp" >
             </TextView>
 
             <EditText
-                android:id="@+id/min_distance"
+                android:id="@+id/min_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:inputType="number"
-                 />
+                android:inputType="number" />
         </RelativeLayout>
     </LinearLayout>
 

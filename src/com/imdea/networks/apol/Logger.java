@@ -13,7 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +21,9 @@ import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class Logger extends Activity {
@@ -32,10 +32,11 @@ public class Logger extends Activity {
 
 	public static Vibrator vib;
 
-	public static boolean isLogging = false;
-	
+	public static boolean GPSOn = false;
+	public static boolean SDOn = false;
+
 	public static final String FOLDER_NAME = "IMDEA";
-	
+
 	Database db;
 
 	LocationManager lm;
@@ -44,11 +45,13 @@ public class Logger extends Activity {
 	TelephonyManager tm;
 	ConnectivityManager cm;
 
-	private final int LOCATION_REFRESH_DISTANCE 		= 30;
-	private final int LOCATION_REFRESH_TIME 			= 15000;
-	
-	private final int SYSTEMATIC_DOWNLOAD_PERIOD_MIN 	= 50; 
-	
+	SystematicDownloads sd;
+
+	private int LOCATION_REFRESH_DISTANCE 		= 30;
+	private int LOCATION_REFRESH_TIME 			= 15000;
+
+	private int SYSTEMATIC_DOWNLOAD_PERIOD_MIN 	= 50; 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,22 +63,24 @@ public class Logger extends Activity {
 		registerEventListeners();
 
 		setUp();
-		
+
 		db = new Database(Logger.context);
 		lm 					= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
 		location  					= lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		
+
 		tm  				= (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 		cm  				= (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 
 	public void setUp() {
+		this.sd = new SystematicDownloads();
+
 		EditText sd_period = (EditText) findViewById(R.id.sd_period);
 		sd_period.setText("" + SYSTEMATIC_DOWNLOAD_PERIOD_MIN);
-		
+
 		EditText min_distance = (EditText) findViewById(R.id.min_distance);
 		min_distance.setText("" + LOCATION_REFRESH_DISTANCE);
-		
+
 		EditText min_time = (EditText) findViewById(R.id.min_time);
 		min_time.setText("" + LOCATION_REFRESH_TIME);
 	}
@@ -125,8 +130,8 @@ public class Logger extends Activity {
 			float bearing 	= location.getBearing();
 			int satellites 	= -1;
 			try { satellites 	= Integer.parseInt(location.getExtras().getString("satellites")); } catch (Exception e) {}
-			int cell_id = -1;
-			int cell_lac = -1;
+			int cell_id 	= -1;
+			int cell_lac 	= -1;
 			if(cl != null) {
 				cell_id 	= cl.getCid();
 				cell_lac 	= cl.getLac();
@@ -144,36 +149,76 @@ public class Logger extends Activity {
 		@Override
 		public void onProviderDisabled(String provider) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 			// TODO Auto-generated method stub
-			
+
 		}
 	};
 
+	public void startSD() { this.sd.comence(SYSTEMATIC_DOWNLOAD_PERIOD_MIN); }
+	public void stopSD() { this.sd.stop(); }
+
 	public void registerEventListeners() {
-		
+
+		Switch SDSwitch = (Switch) findViewById(R.id.sytematic_downloads_switch);
+		SDSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton Switch, boolean checked) {
+				Logger.vib.vibrate((long) 150);
+
+				if(checked) startSD(); else stopSD();
+
+				SDOn = !SDOn;
+			}
+		});
+
+		EditText sd_period = (EditText) findViewById(R.id.sd_period);
+		sd_period.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView text, int key, KeyEvent action) {
+				try { SYSTEMATIC_DOWNLOAD_PERIOD_MIN = Integer.parseInt(text.getText().toString()); } catch (Exception e) { setUp(); }
+				return false;
+			}
+		});
+
 		Switch GPSSwitch = (Switch) findViewById(R.id.GPS_switch);
 		GPSSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
-			@Override
 			public void onCheckedChanged(CompoundButton Switch, boolean checked) {
 				Logger.vib.vibrate((long) 150);
-				
+
 				if(checked) startGPS(); else stopGPS();
-				
-				isLogging = !isLogging;
+
+				GPSOn = !GPSOn;
 			}
-			
+
+		});
+		
+		EditText min_distance = (EditText) findViewById(R.id.min_distance);
+		min_distance.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView text, int key, KeyEvent action) {
+				try { LOCATION_REFRESH_DISTANCE = Integer.parseInt(text.getText().toString()); } catch (Exception e) { setUp(); }
+				return false;
+			}
+		});
+		
+		EditText min_time = (EditText) findViewById(R.id.min_time);
+		min_time.setOnEditorActionListener(new OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView text, int key, KeyEvent action) {
+				try { LOCATION_REFRESH_TIME = Integer.parseInt(text.getText().toString()) * 1000; } catch (Exception e) { e.printStackTrace(); setUp(); }
+				return false;
+			}
 		});
 
 		TextView developerLink = (TextView) findViewById(R.id.bugs_email);

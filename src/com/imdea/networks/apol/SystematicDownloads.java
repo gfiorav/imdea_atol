@@ -6,12 +6,12 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SystematicDownload {
+public class SystematicDownloads {
 	
 	private final int MTU 			= 1500;
 	private int MAX_RETRIES 		= 5;
 	
-	private Timer timer;
+	private Timer timer = new Timer();
 
 	/****************** SERVER FILE ADDRESS ******************/
 	public String URL 		= "http://testvelocidad1.orange.es/speedtest/random1000x1000.jpg";
@@ -23,7 +23,7 @@ public class SystematicDownload {
 		if(timer != null) stop(); else timer.schedule(new TimerTask() { public void run() { start(); } }, 0, period*60000);
 	}
 	
-	public void stop() { timer.cancel(); timer = null;}
+	public void stop() { timer.cancel(); timer = new Timer();}
 
 	void start() {
 		int tries = 0;
