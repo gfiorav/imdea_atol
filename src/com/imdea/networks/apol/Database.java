@@ -2,6 +2,7 @@ package com.imdea.networks.apol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -67,6 +68,19 @@ public class Database extends SQLiteOpenHelper {
 		db.insert(KEY_MEASUREMENTS_TABLE, null, values);
 		
 		db.close();
+	}
+	
+	public int measurements() {
+		SQLiteDatabase db = this.getReadableDatabase();
+		
+		Cursor cursor = db.rawQuery("SELECT count(*) from " + KEY_MEASUREMENTS_TABLE, null);
+		
+		if(cursor != null) {
+			cursor.moveToFirst();
+			return cursor.getInt(0);
+		}
+		
+		return 0;
 	}
 	
 	@Override

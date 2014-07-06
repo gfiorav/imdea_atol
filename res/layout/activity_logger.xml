@@ -60,6 +60,22 @@
             android:layout_centerVertical="true" >
 
             <TextView
+                android:paddingBottom="20dp"
+                android:id="@+id/points_in_db"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+				android:layout_centerHorizontal="true"
+                android:text="Points in DB"
+                android:textSize="20sp" >
+            </TextView>
+        </RelativeLayout>
+        
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" >
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -83,7 +99,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:paddingLeft="20dp"
                 android:text="Period (min)"
                 android:textSize="20sp" >
             </TextView>
@@ -125,7 +141,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:paddingLeft="20dp"
                 android:text="Min Distance (m)"
                 android:textSize="20sp" >
             </TextView>
@@ -146,7 +162,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:paddingLeft="20dp"
                 android:text="Min Time (s)"
                 android:textSize="20sp" >
             </TextView>

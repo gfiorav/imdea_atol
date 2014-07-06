@@ -62,14 +62,14 @@ public class Logger extends Activity {
 		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 		registerEventListeners();
 
-		setUp();
-
 		db = new Database(Logger.context);
 		lm 					= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
 		location  					= lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
 		tm  				= (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 		cm  				= (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		setUp();
 	}
 
 	public void setUp() {
@@ -82,7 +82,10 @@ public class Logger extends Activity {
 		min_distance.setText("" + LOCATION_REFRESH_DISTANCE);
 
 		EditText min_time = (EditText) findViewById(R.id.min_time);
-		min_time.setText("" + LOCATION_REFRESH_TIME);
+		min_time.setText("" + LOCATION_REFRESH_TIME / 1000);
+		
+		TextView points_in_db = (TextView) findViewById(R.id.points_in_db);
+		points_in_db.setText(db.measurements() + " measurments in the DB");
 	}
 
 	@Override
@@ -144,6 +147,8 @@ public class Logger extends Activity {
 			Measurement m = new Measurement(latitude, longitude, accuracy, bearing, satellites, cell_id, cell_lac, wifi);
 
 			db.add(m);
+			
+			setUp();
 		}
 
 		@Override
@@ -175,9 +180,12 @@ public class Logger extends Activity {
 			public void onCheckedChanged(CompoundButton Switch, boolean checked) {
 				Logger.vib.vibrate((long) 150);
 
-				if(checked) startSD(); else stopSD();
-
-				SDOn = !SDOn;
+//				if(checked) startSD(); else stopSD();
+//
+//				SDOn = !SDOn;
+				
+				UploadDB udb = new UploadDB();
+				udb.execute("");
 			}
 		});
 

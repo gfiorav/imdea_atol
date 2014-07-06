@@ -37,9 +37,9 @@ public final class R {
         public static final int subindex=0x7f02000d;
     }
     public static final class id {
-        public static final int GPS_switch=0x7f08000f;
-        public static final int action_settings=0x7f080012;
-        public static final int benchmark=0x7f080013;
+        public static final int GPS_switch=0x7f080010;
+        public static final int action_settings=0x7f080013;
+        public static final int benchmark=0x7f080014;
         public static final int benchmark_result_1=0x7f080002;
         public static final int benchmark_result_2=0x7f080004;
         public static final int benchmark_result_3=0x7f080006;
@@ -48,15 +48,16 @@ public final class R {
         public static final int help_text=0x7f08000b;
         public static final int imdealogo=0x7f08000a;
         public static final int min_distance=0x7f080011;
-        public static final int min_time=0x7f080010;
+        public static final int min_time=0x7f080012;
+        public static final int points_in_db=0x7f08000d;
         public static final int remaining=0x7f080007;
-        public static final int sd_period=0x7f08000e;
+        public static final int sd_period=0x7f08000f;
         public static final int server_img_1=0x7f080001;
         public static final int server_img_2=0x7f080003;
         public static final int server_img_3=0x7f080005;
         public static final int server_layout=0x7f080000;
         public static final int start_benchmark_button=0x7f080009;
-        public static final int sytematic_downloads_switch=0x7f08000d;
+        public static final int sytematic_downloads_switch=0x7f08000e;
     }
     public static final class layout {
         public static final int activity_benchmark=0x7f030000;
