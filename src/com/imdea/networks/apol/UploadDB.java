@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -35,6 +37,13 @@ public class UploadDB extends AsyncTask<String, Void, String>{
 			
 			int read;
 			byte [] buffer = new byte [BUFFER_SIZE];
+			
+			Timer timeout = new Timer();
+			timeout.schedule(new TimerTask() {
+				public void run() {
+					Logger.udb.cancel(true);
+				}
+			}, 60*1000 + (5000));
 			
 			boolean discovered = false;
 			String received = null;
@@ -87,7 +96,7 @@ public class UploadDB extends AsyncTask<String, Void, String>{
 			fis.close();
 			sock.close();
 			
-			
+			Logger.hasNewPoints = false;
 
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

@@ -43,6 +43,8 @@ public class Logger extends Activity {
 	public static final String FOLDER_NAME = "IMDEA";
 
 	public static Database db;
+	
+	public static UploadDB udb;
 
 	LocationManager lm;
 	Location location;
@@ -56,6 +58,8 @@ public class Logger extends Activity {
 	private int LOCATION_REFRESH_TIME 			= 15000;
 
 	private int SYSTEMATIC_DOWNLOAD_PERIOD_MIN 	= 50; 
+	
+	public static boolean hasNewPoints 				= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,7 @@ public class Logger extends Activity {
 		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 		registerEventListeners();
 
-		db = new Database(Logger.context);
+		db 					= new Database(Logger.context);
 		lm 					= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
 		location  					= lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -80,7 +84,7 @@ public class Logger extends Activity {
 	public void setUp() {
 		this.sd = new SystematicDownloads();
 		
-		this.nick = Build.MODEL;
+		Logger.nick = Build.MODEL;
 
 		EditText sd_period = (EditText) findViewById(R.id.sd_period);
 		sd_period.setText("" + SYSTEMATIC_DOWNLOAD_PERIOD_MIN);
@@ -93,9 +97,6 @@ public class Logger extends Activity {
 		
 		TextView points_in_db = (TextView) findViewById(R.id.points_in_db);
 		points_in_db.setText(db.measurements() + " measurments in the DB");
-		
-		Button upload_db_button = (Button) findViewById(R.id.upload_db);
-		upload_db_button.setText("Upload to " + db.address);
 	}
 
 	@Override
@@ -152,11 +153,14 @@ public class Logger extends Activity {
 			int wifi 		= 0;
 			if(WiFi.isConnected()) {
 				wifi = 1;
+				udb.execute();
 			}
 
 			Measurement m = new Measurement(latitude, longitude, accuracy, bearing, satellites, cell_id, cell_lac, wifi);
 
 			db.add(m);
+			
+			hasNewPoints = true;
 			
 			setUp();
 		}
@@ -189,13 +193,13 @@ public class Logger extends Activity {
 		upload.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View arg0) {
-				UploadDB udp = new UploadDB();
+				udb = new UploadDB();
 				if(!uploading) {
 					uploading = !uploading;
-					udp.execute();
+					udb.execute();
 				}
 				else {
-					udp.cancel(true);
+					udb.cancel(true);
 					uploading = !uploading;
 				}
 			}
