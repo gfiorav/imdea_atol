@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
@@ -34,10 +36,13 @@ public class Logger extends Activity {
 
 	public static boolean GPSOn = false;
 	public static boolean SDOn = false;
+	public static boolean uploading = false;
+	
+	public static String nick;
 
 	public static final String FOLDER_NAME = "IMDEA";
 
-	Database db;
+	public static Database db;
 
 	LocationManager lm;
 	Location location;
@@ -74,6 +79,8 @@ public class Logger extends Activity {
 
 	public void setUp() {
 		this.sd = new SystematicDownloads();
+		
+		this.nick = Build.MODEL;
 
 		EditText sd_period = (EditText) findViewById(R.id.sd_period);
 		sd_period.setText("" + SYSTEMATIC_DOWNLOAD_PERIOD_MIN);
@@ -86,6 +93,9 @@ public class Logger extends Activity {
 		
 		TextView points_in_db = (TextView) findViewById(R.id.points_in_db);
 		points_in_db.setText(db.measurements() + " measurments in the DB");
+		
+		Button upload_db_button = (Button) findViewById(R.id.upload_db);
+		upload_db_button.setText("Upload to " + db.address);
 	}
 
 	@Override
@@ -174,18 +184,32 @@ public class Logger extends Activity {
 	public void stopSD() { this.sd.stop(); }
 
 	public void registerEventListeners() {
+		
+		Button upload 	= (Button) findViewById(R.id.upload_db);
+		upload.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				UploadDB udp = new UploadDB();
+				if(!uploading) {
+					uploading = !uploading;
+					udp.execute();
+				}
+				else {
+					udp.cancel(true);
+					uploading = !uploading;
+				}
+			}
+		});
 
 		Switch SDSwitch = (Switch) findViewById(R.id.sytematic_downloads_switch);
 		SDSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton Switch, boolean checked) {
 				Logger.vib.vibrate((long) 150);
 
-//				if(checked) startSD(); else stopSD();
-//
-//				SDOn = !SDOn;
+				if(checked) startSD(); else stopSD();
+
+				SDOn = !SDOn;
 				
-				UploadDB udb = new UploadDB();
-				udb.execute("");
 			}
 		});
 
