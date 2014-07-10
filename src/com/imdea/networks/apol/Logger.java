@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -70,6 +71,8 @@ public class Logger extends Activity {
 
 		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
 		registerEventListeners();
+		
+		udb 				= new UploadDB();
 
 		db 					= new Database(Logger.context);
 		lm 					= (LocationManager) Logger.context.getSystemService(Context.LOCATION_SERVICE);
@@ -153,7 +156,7 @@ public class Logger extends Activity {
 			int wifi 		= 0;
 			if(WiFi.isConnected()) {
 				wifi = 1;
-				udb.execute();
+				
 			}
 
 			Measurement m = new Measurement(latitude, longitude, accuracy, bearing, satellites, cell_id, cell_lac, wifi);

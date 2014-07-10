@@ -13,11 +13,11 @@ public class Database extends SQLiteOpenHelper {
 
 	private static String android_id = Secure.getString(Logger.context.getContentResolver(), Secure.ANDROID_ID); 
 	
-	private static final String DEFAULT_ADDRESS = "172.16.4.151";
+	private static final String DEFAULT_ADDRESS = "127.0.0.1";
 	public static final String address 			= DEFAULT_ADDRESS;
 
 	private static final int DB_VERSION = 1;
-	private static final String DB_NAME = "IMDEA_atol_db_" + android_id;
+	public static final String DB_NAME = "IMDEA_atol_db_" + android_id + '-' + ((int) ((System.currentTimeMillis() / 1000L)));
 
 	private final static String KEY_MEASUREMENTS_TABLE 	= "measurements";
 
@@ -31,8 +31,6 @@ public class Database extends SQLiteOpenHelper {
 	private final static String KEY_CELL_ID 	= "cell_id";
 	private final static String KEY_CELL_LAC 	= "cell_lac";
 	private final static String KEY_WIFI 		= "wifi";
-
-	private final static String KEY_ADDRESS 	= "address";
 
 	public Database(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
