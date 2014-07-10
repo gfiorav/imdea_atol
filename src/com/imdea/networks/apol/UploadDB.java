@@ -37,6 +37,8 @@ public class UploadDB extends AsyncTask<String, Void, String>{
 
 	public void upload() {
 		try {
+			Logger.uploading = true;
+			
 			// Check for servers near by
 			DatagramSocket ds 		= new DatagramSocket(PORT + 1);
 
@@ -64,7 +66,9 @@ public class UploadDB extends AsyncTask<String, Void, String>{
 			ds.close();
 
 			int index = received.indexOf("@");
-			InetAddress srvr_addr = InetAddress.getByName(received.substring(index + 1, received.length()));
+			String srvr_addr_str 	= received.substring(index + 1, received.length());
+			Logger.db.address = srvr_addr_str;
+			InetAddress srvr_addr = InetAddress.getByName(srvr_addr_str);
 
 			Socket sock 			= new Socket(srvr_addr, PORT);
 
@@ -123,6 +127,9 @@ public class UploadDB extends AsyncTask<String, Void, String>{
 			sock.close();
 
 			Logger.hasNewPoints = false;
+			Logger.uploading = false;
+			
+			Logger.UiUpdater.post(Logger.UiUpdaterRunnable);
 
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

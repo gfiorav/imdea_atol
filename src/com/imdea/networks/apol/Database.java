@@ -14,7 +14,7 @@ public class Database extends SQLiteOpenHelper {
 	private static String android_id = Secure.getString(Logger.context.getContentResolver(), Secure.ANDROID_ID); 
 	
 	private static final String DEFAULT_ADDRESS = "127.0.0.1";
-	public static final String address 			= DEFAULT_ADDRESS;
+	public static String address 			= DEFAULT_ADDRESS;
 
 	private static final int DB_VERSION = 1;
 	public static final String DB_NAME = "IMDEA_atol_db_" + android_id + '-' + ((int) ((System.currentTimeMillis() / 1000L)));

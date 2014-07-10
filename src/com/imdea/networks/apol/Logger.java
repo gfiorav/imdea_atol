@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Context;
@@ -61,6 +62,9 @@ public class Logger extends Activity {
 	private int SYSTEMATIC_DOWNLOAD_PERIOD_MIN 	= 50; 
 	
 	public static boolean hasNewPoints 				= false;
+	
+	public static Handler UiUpdater;
+	public static Runnable UiUpdaterRunnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,6 @@ public class Logger extends Activity {
 		Logger.context = getApplicationContext();
 
 		Logger.vib = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
-		registerEventListeners();
 		
 		udb 				= new UploadDB();
 
@@ -81,10 +84,30 @@ public class Logger extends Activity {
 		tm  				= (TelephonyManager) Logger.context.getSystemService(Context.TELEPHONY_SERVICE);
 		cm  				= (ConnectivityManager) Logger.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
+		Logger.UiUpdater = new Handler();
+		Logger.UiUpdaterRunnable = new Runnable() {
+			public void run() {
+				Button b = (Button) findViewById(R.id.upload_db);
+				
+				if(hasNewPoints){
+					b.setText("Upload is pending");
+				}
+				else if(uploading) {
+					b.setText("Uploading...");
+				}
+				else {
+					b.setText("DB Synced to " + db.address);
+				}
+			}
+		};
+		
 		setUp();
+		
+		registerEventListeners();
 	}
 
 	public void setUp() {
+		
 		this.sd = new SystematicDownloads();
 		
 		Logger.nick = Build.MODEL;
@@ -146,7 +169,7 @@ public class Logger extends Activity {
 			float accuracy 	= location.getAccuracy();
 			float bearing 	= location.getBearing();
 			int satellites 	= -1;
-			try { satellites 	= Integer.parseInt(location.getExtras().getString("satellites")); } catch (Exception e) {}
+			try { satellites 	= location.getExtras().getInt("satellites"); } catch (Exception e) {}
 			int cell_id 	= -1;
 			int cell_lac 	= -1;
 			if(cl != null) {
@@ -166,6 +189,8 @@ public class Logger extends Activity {
 			hasNewPoints = true;
 			
 			setUp();
+			
+			Logger.UiUpdater.post(Logger.UiUpdaterRunnable);
 		}
 
 		@Override
@@ -194,16 +219,13 @@ public class Logger extends Activity {
 		
 		Button upload 	= (Button) findViewById(R.id.upload_db);
 		upload.setOnClickListener(new OnClickListener() {
-
+			NetworkInfo WiFi 					= cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 			public void onClick(View arg0) {
-				udb = new UploadDB();
 				if(!uploading) {
-					uploading = !uploading;
-					udb.execute();
-				}
-				else {
-					udb.cancel(true);
-					uploading = !uploading;
+					if(WiFi.isConnected()) {
+						udb = new UploadDB();
+						udb.execute();
+					}
 				}
 			}
 		});
