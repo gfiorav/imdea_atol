@@ -27,7 +27,7 @@
             android:id="@+id/help_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/imdealogo"
+            android:layout_below="@+id/imdealogo"
             android:layout_marginTop="5dp"
             android:fontFamily="Helvetica Neue"
             android:gravity="center"
@@ -39,7 +39,7 @@
             android:id="@+id/bugs_email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/help_text"
+            android:layout_below="@+id/help_text"
             android:fontFamily="Helvetica Neue"
             android:gravity="center"
             android:text="@string/bugs_email"
@@ -56,133 +56,182 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:gravity="center" >
 
             <TextView
-                android:id="@+id/points_in_db"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Dump file Prefix"
                 android:textAlignment="center"
-                android:text="Points in DB"
                 android:textSize="20sp" >
             </TextView>
+
+            <EditText
+                android:id="@+id/file_prefix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="default-prefix" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" 
-            android:gravity="center"
-            >
+            android:layout_height="wrap_content"
+            android:gravity="center" >
 
             <Button
-                android:id="@+id/upload_db"
+                android:id="@+id/start_tcpdump"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload" 
-				
-                >
+                android:text="Start TCPDump" >
             </Button>
         </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+        <!-- <LinearLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:text="Systematic Downloads"
-                android:textSize="20sp" >
-            </TextView>
 
-            <Switch
-                android:id="@+id/sytematic_downloads_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" >
-            </Switch>
-        </RelativeLayout>
+        <!-- <TextView -->
+        <!-- android:id="@+id/points_in_db" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:text="Points in DB" -->
+        <!-- android:textAlignment="center" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
+        <!-- </LinearLayout> -->
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:text="Period (min)"
-                android:textSize="20sp" >
-            </TextView>
+        <!-- <LinearLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:gravity="center" > -->
 
-            <EditText
-                android:id="@+id/sd_period"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:inputType="number" />
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+        <!-- <Button -->
+        <!-- android:id="@+id/upload_db" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:text="Upload" > -->
+        <!-- </Button> -->
+        <!-- </LinearLayout> -->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:text="GPS Tracking"
-                android:textSize="20sp" >
-            </TextView>
 
-            <Switch
-                android:id="@+id/GPS_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" >
-            </Switch>
-        </RelativeLayout>
+        <!-- <RelativeLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:text="Min Distance (m)"
-                android:textSize="20sp" >
-            </TextView>
+        <!-- <TextView -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentLeft="true" -->
+        <!-- android:text="Systematic Downloads" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
 
-            <EditText
-                android:id="@+id/min_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:inputType="number" />
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+        <!-- <Switch -->
+        <!-- android:id="@+id/sytematic_downloads_switch" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentRight="true" -->
+        <!-- android:enabled="false" > -->
+        <!-- </Switch> -->
+        <!-- </RelativeLayout> -->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:text="Min Time (s)"
-                android:textSize="20sp" >
-            </TextView>
 
-            <EditText
-                android:id="@+id/min_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:inputType="number" />
-        </RelativeLayout>
+        <!-- <RelativeLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
+
+
+        <!-- <TextView -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:paddingLeft="20dp" -->
+        <!-- android:text="Period (min)" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
+
+
+        <!-- <EditText -->
+        <!-- android:id="@+id/sd_period" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentRight="true" -->
+        <!-- android:inputType="number" /> -->
+        <!-- </RelativeLayout> -->
+
+
+        <!-- <RelativeLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
+
+
+        <!-- <TextView -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentLeft="true" -->
+        <!-- android:text="GPS Tracking" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
+
+
+        <!-- <Switch -->
+        <!-- android:id="@+id/GPS_switch" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentRight="true" > -->
+        <!-- </Switch> -->
+        <!-- </RelativeLayout> -->
+
+
+        <!-- <RelativeLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
+
+
+        <!-- <TextView -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:paddingLeft="20dp" -->
+        <!-- android:text="Min Distance (m)" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
+
+
+        <!-- <EditText -->
+        <!-- android:id="@+id/min_distance" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentRight="true" -->
+        <!-- android:inputType="number" /> -->
+        <!-- </RelativeLayout> -->
+
+
+        <!-- <RelativeLayout -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" > -->
+
+
+        <!-- <TextView -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:paddingLeft="20dp" -->
+        <!-- android:text="Min Time (s)" -->
+        <!-- android:textSize="20sp" > -->
+        <!-- </TextView> -->
+
+
+        <!-- <EditText -->
+        <!-- android:id="@+id/min_time" -->
+        <!-- android:layout_width="wrap_content" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:layout_alignParentRight="true" -->
+        <!-- android:inputType="number" /> -->
+        <!-- </RelativeLayout> -->
     </LinearLayout>
 
 </RelativeLayout>
